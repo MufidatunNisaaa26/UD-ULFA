@@ -52,7 +52,11 @@ export function DashboardPage() {
       {/* 2. Area Konten Utama */}
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-0">
         <main
-          className={`flex-1 min-h-0 px-3 sm:px-6 lg:px-8 pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col ${
+          className={`flex-1 min-h-0 ${
+            isSidebarCollapsed
+              ? 'pl-2 sm:pl-3 pr-3 sm:pr-6 lg:pr-8'
+              : 'px-3 sm:px-6 lg:px-8'
+          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col ${
             currentTab === 'transaksi' ||
             currentTab === 'produk' ||
             (currentTab === 'dashboard' &&

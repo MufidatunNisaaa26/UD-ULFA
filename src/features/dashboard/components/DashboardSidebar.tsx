@@ -37,7 +37,7 @@ export function DashboardSidebar({
     <aside
       className={`${
         isCollapsed
-          ? 'w-16 p-2.5 sm:p-3 bg-transparent border-transparent'
+          ? 'w-16 sm:w-[72px] pl-3.5 sm:pl-5 pr-1 pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 bg-transparent border-transparent'
           : 'w-56 xl:w-64 p-3.5 sm:p-4 md:p-5 bg-[#ede7fa] border-r border-purple-200/40'
       } flex flex-col justify-between select-none shrink-0 h-full relative z-10 transition-all duration-300 ease-in-out`}
     >
@@ -52,8 +52,8 @@ export function DashboardSidebar({
               ? 'Klik logo untuk membuka menu'
               : 'Klik logo untuk menutup menu'
           }
-          className={`flex items-center gap-3 px-1 py-1 mb-6 text-left transition-all cursor-pointer group ${
-            isCollapsed ? 'justify-center w-full' : 'justify-start'
+          className={`flex items-center text-left transition-all cursor-pointer group ${
+            isCollapsed ? 'justify-center p-0' : 'justify-start gap-3 px-1 py-1 mb-6'
           }`}
         >
           <div className="w-10 h-10 rounded-[15px] bg-[#673ee8] group-hover:bg-[#582bc4] text-white flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0 transition-all group-active:scale-95">
