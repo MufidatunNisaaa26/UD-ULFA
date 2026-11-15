@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { UserAccount } from '../../auth/data/registeredAccounts'
 
@@ -48,7 +48,22 @@ export function useDashboard() {
   const [productViewMode, setProductViewMode] = useState<ProductViewMode>('list')
   const [currentDate] = useState(getFormattedCurrentDate)
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768
+    }
+    return false
+  })
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarCollapsed(true)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleTabChange = (tabId: string) => {
     setCurrentTab(tabId)
@@ -57,6 +72,9 @@ export function useDashboard() {
     }
     if (tabId !== 'produk') {
       setProductViewMode('list')
+    }
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarCollapsed(true)
     }
   }
 

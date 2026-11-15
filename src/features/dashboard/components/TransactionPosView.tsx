@@ -52,9 +52,9 @@ export function TransactionPosView() {
   } = useTransactionPos()
 
   return (
-    <div className="w-full h-full min-h-0 flex flex-col lg:flex-row gap-3.5 sm:gap-4 select-none overflow-hidden pb-1">
+    <div className="w-full h-full min-h-0 flex flex-col lg:flex-row gap-3.5 sm:gap-4 select-none overflow-y-auto lg:overflow-hidden pb-1">
       {/* 1. Kolom Kiri: Katalog Produk (Grid Produk) */}
-      <div className="flex-1 bg-white rounded-[20px] p-3.5 sm:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/50 flex flex-col h-full min-h-0 overflow-hidden">
+      <div className="flex-1 bg-white rounded-[20px] p-3.5 sm:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/50 flex flex-col min-h-[420px] lg:min-h-0 lg:h-full overflow-hidden">
         {/* Search Bar */}
         <div className="relative mb-3 shrink-0">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -144,7 +144,7 @@ export function TransactionPosView() {
       </div>
 
       {/* 2. Kolom Kanan: Panel Kasir & Keranjang Transaksi */}
-      <div className="w-full lg:w-80 xl:w-[350px] shrink-0 h-full flex flex-col justify-between bg-white rounded-[20px] p-3.5 sm:p-4 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-0 overflow-hidden">
+      <div className="w-full lg:w-80 xl:w-[350px] shrink-0 flex flex-col justify-between bg-white rounded-[20px] p-3.5 sm:p-4 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-[480px] lg:min-h-0 lg:h-full overflow-hidden">
         {/* Header Panel Kasir: Nomor Transaksi & Waktu */}
         <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 shrink-0">
           <div className="bg-[#f0e9fd] text-[#673ee8] font-bold text-xs px-2.5 py-1 rounded-[8px] flex items-center gap-1 shadow-2xs">

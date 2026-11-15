@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { ArrowLeft, Calendar, Store } from 'lucide-react'
 import { useDashboard } from '../features/dashboard/hooks/useDashboard'
 import { DashboardSidebar } from '../features/dashboard/components/DashboardSidebar'
 import { ProductDonutChart } from '../features/dashboard/components/charts/ProductDonutChart'
@@ -35,11 +35,19 @@ export function DashboardPage() {
   } = useDashboard()
 
   return (
-    <div className="h-screen max-h-screen w-full min-w-[1080px] flex relative overflow-hidden select-none">
+    <div className="h-screen max-h-screen w-full flex relative overflow-hidden select-none">
       {/* Background Organik Ungu (Sama persis dengan halaman Auth) */}
       <OrganicPurpleBackground />
 
-      {/* 1. Sidebar Kiri (Bisa Dilebarkan & Ditutup) */}
+      {/* Backdrop di Layar HP saat Drawer Sidebar Terbuka */}
+      {!isSidebarCollapsed && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+          onClick={toggleSidebar}
+        />
+      )}
+
+      {/* 1. Sidebar Kiri (Bisa Dilebarkan & Ditutup, Drawer di HP) */}
       <DashboardSidebar
         activeUser={activeUser}
         currentTab={currentTab}
@@ -54,102 +62,117 @@ export function DashboardPage() {
         <main
           className={`flex-1 min-h-0 ${
             isSidebarCollapsed
-              ? 'pl-2 sm:pl-3 pr-3 sm:pr-6 lg:pr-8'
+              ? 'px-3 sm:pl-3 sm:pr-6 lg:pr-8'
               : 'px-3 sm:px-6 lg:px-8'
           } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col ${
             currentTab === 'transaksi' ||
             currentTab === 'produk' ||
+            currentTab === 'keuangan' ||
             (currentTab === 'dashboard' &&
               (dashboardSubView === 'receipt-detail' ||
                 dashboardSubView === 'stock-detail' ||
                 dashboardSubView === 'financial-detail'))
-              ? 'overflow-hidden'
+              ? 'overflow-y-auto lg:overflow-hidden'
               : 'overflow-y-auto'
           }`}
         >
           {/* Header Konten: Breadcrumb di Kiri & Tanggal di Kanan */}
-          <header className="w-full flex items-center justify-between pb-2.5 sm:pb-3 shrink-0">
-            {currentTab === 'dashboard' && dashboardSubView === 'product-detail' ? (
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+          <header className="w-full flex items-center justify-between pb-2.5 sm:pb-3 gap-2 shrink-0">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              {/* Tombol Logo Toko di Layar HP untuk Buka Menu */}
+              {isSidebarCollapsed && (
                 <button
                   type="button"
-                  onClick={() => setDashboardSubView('overview')}
-                  className="hover:text-[#673ee8] transition-colors cursor-pointer"
+                  onClick={toggleSidebar}
+                  title="Buka Menu"
+                  className="w-9 h-9 rounded-[12px] bg-[#673ee8] hover:bg-[#582bc4] text-white flex md:hidden items-center justify-center shadow-md shadow-purple-600/20 shrink-0 transition-all cursor-pointer active:scale-95"
                 >
-                  Dashboard
+                  <Store className="w-4.5 h-4.5" />
                 </button>
-                <span className="text-slate-400 font-normal">&gt;</span>
-                <span className="text-slate-700">Detail Total Produk</span>
-              </div>
-            ) : currentTab === 'dashboard' && dashboardSubView === 'stock-detail' ? (
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
-                <button
-                  type="button"
-                  onClick={() => setDashboardSubView('overview')}
-                  className="hover:text-[#673ee8] transition-colors cursor-pointer"
-                >
-                  Dashboard
-                </button>
-                <span className="text-slate-400 font-normal">&gt;</span>
-                <span className="text-slate-700">Status Stok</span>
-              </div>
-            ) : currentTab === 'dashboard' && dashboardSubView === 'financial-detail' ? (
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
-                <button
-                  type="button"
-                  onClick={() => setDashboardSubView('overview')}
-                  className="hover:text-[#673ee8] transition-colors cursor-pointer"
-                >
-                  Dashboard
-                </button>
-                <span className="text-slate-400 font-normal">&gt;</span>
-                <span className="text-slate-700">Detail Keuangan</span>
-              </div>
-            ) : currentTab === 'dashboard' && dashboardSubView === 'receipt-detail' ? (
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCurrentTab('dashboard')
-                    setDashboardSubView('overview')
-                  }}
-                  className="hover:text-[#673ee8] transition-colors cursor-pointer"
-                >
-                  Dashboard
-                </button>
-                <span className="text-slate-400 font-normal">&gt;</span>
-                <span className="text-slate-700">Riwayat Transaksi</span>
-              </div>
-            ) : currentTab === 'produk' && productViewMode !== 'list' ? (
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setProductViewMode('list')}
-                  className="w-9 h-9 rounded-full bg-[#f0e9fd] hover:bg-[#e4d8fb] text-[#673ee8] flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0"
-                  title="Kembali ke Daftar Produk"
-                >
-                  <ArrowLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-                </button>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#1e153b] tracking-tight">
-                  {productViewMode === 'edit' ? 'Edit Produk' : 'Tambah Produk Baru'}
+              )}
+
+              {currentTab === 'dashboard' && dashboardSubView === 'product-detail' ? (
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+                  <button
+                    type="button"
+                    onClick={() => setDashboardSubView('overview')}
+                    className="hover:text-[#673ee8] transition-colors cursor-pointer"
+                  >
+                    Dashboard
+                  </button>
+                  <span className="text-slate-400 font-normal">&gt;</span>
+                  <span className="text-slate-700">Detail Total Produk</span>
+                </div>
+              ) : currentTab === 'dashboard' && dashboardSubView === 'stock-detail' ? (
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+                  <button
+                    type="button"
+                    onClick={() => setDashboardSubView('overview')}
+                    className="hover:text-[#673ee8] transition-colors cursor-pointer"
+                  >
+                    Dashboard
+                  </button>
+                  <span className="text-slate-400 font-normal">&gt;</span>
+                  <span className="text-slate-700">Status Stok</span>
+                </div>
+              ) : currentTab === 'dashboard' && dashboardSubView === 'financial-detail' ? (
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+                  <button
+                    type="button"
+                    onClick={() => setDashboardSubView('overview')}
+                    className="hover:text-[#673ee8] transition-colors cursor-pointer"
+                  >
+                    Dashboard
+                  </button>
+                  <span className="text-slate-400 font-normal">&gt;</span>
+                  <span className="text-slate-700">Detail Keuangan</span>
+                </div>
+              ) : currentTab === 'dashboard' && dashboardSubView === 'receipt-detail' ? (
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentTab('dashboard')
+                      setDashboardSubView('overview')
+                    }}
+                    className="hover:text-[#673ee8] transition-colors cursor-pointer"
+                  >
+                    Dashboard
+                  </button>
+                  <span className="text-slate-400 font-normal">&gt;</span>
+                  <span className="text-slate-700">Riwayat Transaksi</span>
+                </div>
+              ) : currentTab === 'produk' && productViewMode !== 'list' ? (
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setProductViewMode('list')}
+                    className="w-9 h-9 rounded-full bg-[#f0e9fd] hover:bg-[#e4d8fb] text-[#673ee8] flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0"
+                    title="Kembali ke Daftar Produk"
+                  >
+                    <ArrowLeft className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                  </button>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#1e153b] tracking-tight">
+                    {productViewMode === 'edit' ? 'Edit Produk' : 'Tambah Produk Baru'}
+                  </h2>
+                </div>
+              ) : (
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#1e153b] tracking-tight capitalize">
+                  {currentTab}
                 </h2>
-              </div>
-            ) : (
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1e153b] tracking-tight capitalize">
-                {currentTab}
-              </h2>
-            )}
+              )}
+            </div>
 
             {/* Badge Tanggal */}
-            <div className={`flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-white shadow-[0_2px_8px_rgba(103,62,232,0.06)] text-xs sm:text-sm font-semibold text-slate-800 shrink-0 ${
+            <div className={`flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white shadow-[0_2px_8px_rgba(103,62,232,0.06)] text-[11px] sm:text-sm font-semibold text-slate-800 shrink-0 ${
               currentTab === 'pengaturan' ? 'rounded-full' : 'rounded-[15px]'
             }`}>
               {currentTab === 'pengaturan' ? (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
               ) : (
-                <Calendar className="w-4 h-4 text-[#673ee8] shrink-0" />
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#673ee8] shrink-0" />
               )}
-              <span>{currentDate}</span>
+              <span className="truncate max-w-[130px] sm:max-w-none">{currentDate}</span>
             </div>
           </header>
 
@@ -171,7 +194,7 @@ export function DashboardPage() {
               ) : dashboardSubView === 'financial-detail' ? (
                 <FinanceView />
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 h-full max-h-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 lg:h-full lg:max-h-full pb-4 lg:pb-0">
                   {/* Kartu 1 (Kiri Atas): Grafik Total Produk */}
                   <div className="h-full min-h-[260px]">
                     <ProductDonutChart

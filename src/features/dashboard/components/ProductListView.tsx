@@ -299,11 +299,11 @@ export function ProductListView(props: ProductListViewProps = {}) {
     const hasPhoto = Boolean(selectedImagePreview || previewType)
 
     return (
-      <div className="w-full h-full min-h-0 bg-white rounded-[15px] p-5 sm:p-7 lg:p-8 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 select-none flex flex-col justify-between overflow-hidden">
+      <div className="w-full h-full min-h-0 bg-white rounded-[15px] p-4 sm:p-7 lg:p-8 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 select-none flex flex-col justify-between overflow-y-auto lg:overflow-hidden">
         <form onSubmit={handleFormSubmit} className="flex-1 flex flex-col justify-between min-h-0">
           <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6 min-h-0">
             {/* Baris 1: Nama Produk & Kategori */}
-            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
               {/* Nama Produk */}
               <div>
                 <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
@@ -360,7 +360,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
             </div>
 
             {/* Baris 2: Harga & Stok */}
-            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
               {/* Harga */}
               <div>
                 <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
@@ -471,7 +471,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 shrink-0 self-end">
+                  <div className="flex flex-wrap sm:flex-nowrap items-center justify-end gap-3 shrink-0 self-end sm:self-auto w-full sm:w-auto mt-2 sm:mt-0">
                     <button
                       type="button"
                       onClick={handleCancel}
@@ -624,27 +624,29 @@ export function ProductListView(props: ProductListViewProps = {}) {
 
       {/* 2. Kartu Tabel Produk: Full Width, Border 15px, Scrollable Table */}
       <div className="flex-1 bg-white rounded-[15px] p-3 sm:p-4 lg:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col min-h-0 overflow-hidden">
-        {/* Table Header Row Berwarna (Fixed di atas) */}
-        <div className="shrink-0 mb-1 pr-1">
-          <table className="w-full text-left text-xs border-collapse table-fixed">
-            <thead>
-              <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3 px-3 text-center w-[7%] min-w-[50px] rounded-l-[15px]">NO.</th>
-                <th className="py-3 px-3 text-center w-[10%] min-w-[70px]">GAMBAR</th>
-                <th className="py-3 px-4 text-left w-[23%]">NAMA PRODUK</th>
-                <th className="py-3 px-4 text-left w-[20%]">KATEGORI</th>
-                <th className="py-3 px-3 text-center w-[14%]">HARGA</th>
-                <th className="py-3 px-3 text-center w-[14%]">STOK</th>
-                <th className="py-3 px-3 text-center w-[12%] min-w-[75px] rounded-r-[15px]">AKSI</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
+        <div className="flex-1 flex flex-col min-h-0 overflow-x-auto">
+          <div className="min-w-[680px] flex-1 flex flex-col min-h-0">
+            {/* Table Header Row Berwarna (Fixed di atas) */}
+            <div className="shrink-0 mb-1 pr-1">
+              <table className="w-full text-left text-xs border-collapse table-fixed">
+                <thead>
+                  <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+                    <th className="py-3 px-3 text-center w-[7%] min-w-[50px] rounded-l-[15px]">NO.</th>
+                    <th className="py-3 px-3 text-center w-[10%] min-w-[70px]">GAMBAR</th>
+                    <th className="py-3 px-4 text-left w-[23%]">NAMA PRODUK</th>
+                    <th className="py-3 px-4 text-left w-[20%]">KATEGORI</th>
+                    <th className="py-3 px-3 text-center w-[14%]">HARGA</th>
+                    <th className="py-3 px-3 text-center w-[14%]">STOK</th>
+                    <th className="py-3 px-3 text-center w-[12%] min-w-[75px] rounded-r-[15px]">AKSI</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
 
-        {/* Area Scroll Daftar Produk */}
-        <div className="overflow-y-auto flex-1 min-h-0 pr-1">
-          <table className="w-full text-left text-xs border-collapse table-fixed">
-            <tbody className="divide-y divide-slate-100/80">
+            {/* Area Scroll Daftar Produk */}
+            <div className="overflow-y-auto flex-1 min-h-0 pr-1">
+              <table className="w-full text-left text-xs border-collapse table-fixed">
+                <tbody className="divide-y divide-slate-100/80">
               {filteredProducts.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-400 text-xs">
@@ -746,6 +748,8 @@ export function ProductListView(props: ProductListViewProps = {}) {
           </table>
         </div>
       </div>
+    </div>
+  </div>
 
       {/* POPUP MODAL KONFIRMASI HAPUS PRODUK: DIPORTAL KE BODY, FULL CENTER, BACKGROUND GELAP NON-BLUR */}
       {productToDelete &&

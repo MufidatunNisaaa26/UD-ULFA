@@ -40,7 +40,7 @@ export function TransactionReceiptHistory({
   onViewAll,
 }: TransactionReceiptHistoryProps) {
   return (
-    <div className="bg-white rounded-[15px] p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
+    <div className="bg-white rounded-[15px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
