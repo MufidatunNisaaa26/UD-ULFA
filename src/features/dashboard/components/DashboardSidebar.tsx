@@ -30,15 +30,15 @@ export function DashboardSidebar({
   onLogout,
 }: DashboardSidebarProps) {
   return (
-    <aside className="w-16 md:w-56 xl:w-64 bg-[#ede7fa] border-r border-purple-200/40 flex flex-col justify-between p-2.5 sm:p-3 md:p-5 select-none shrink-0 h-full relative z-10 transition-all duration-200">
+    <aside className="w-56 xl:w-64 bg-[#ede7fa] border-r border-purple-200/40 flex flex-col justify-between p-3.5 sm:p-4 md:p-5 select-none shrink-0 h-full relative z-10 transition-all duration-200">
       {/* Top Section: Branding & Navigation */}
       <div className="flex flex-col">
         {/* Brand Logo & Name */}
-        <div className="flex items-center gap-3 px-1 py-1 mb-6 justify-center md:justify-start">
+        <div className="flex items-center gap-3 px-1 py-1 mb-6 justify-start">
           <div className="w-10 h-10 rounded-[15px] bg-[#673ee8] text-white flex items-center justify-center shadow-md shadow-purple-600/20 shrink-0">
             <Store className="w-5 h-5" />
           </div>
-          <div className="leading-tight hidden md:block">
+          <div className="leading-tight block">
             <h1 className="text-base font-bold text-[#1e153b] tracking-tight">
               UD Ulfa
             </h1>
@@ -60,7 +60,7 @@ export function DashboardSidebar({
                 type="button"
                 onClick={() => onTabChange(item.id)}
                 title={item.label}
-                className={`w-full flex items-center justify-center md:justify-start gap-3.5 px-2 md:px-3.5 py-2.5 rounded-[15px] text-sm font-semibold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start gap-3.5 px-3 py-2.5 rounded-[15px] text-sm font-semibold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-white text-[#1e153b] shadow-[0_2px_10px_rgba(103,62,232,0.08)]'
                     : 'text-[#4a4267] hover:text-[#1e153b] hover:bg-white/40'
@@ -71,7 +71,7 @@ export function DashboardSidebar({
                     isActive ? 'text-[#673ee8]' : 'text-[#584e79]'
                   }`}
                 />
-                <span className="hidden md:inline">{item.label}</span>
+                <span className="inline">{item.label}</span>
               </button>
             )
           })}
@@ -84,10 +84,10 @@ export function DashboardSidebar({
           type="button"
           onClick={onLogout}
           title="Log Out"
-          className="w-full flex items-center justify-center md:justify-start gap-3.5 px-2 md:px-3.5 py-2.5 rounded-[15px] text-sm font-semibold text-[#e11d48] bg-white hover:bg-rose-50/50 hover:text-rose-700 shadow-[0_2px_10px_rgba(103,62,232,0.08)] transition-all cursor-pointer active:scale-98"
+          className="w-full flex items-center justify-start gap-3.5 px-3 py-2.5 rounded-[15px] text-sm font-semibold text-[#e11d48] bg-white hover:bg-rose-50/50 hover:text-rose-700 shadow-[0_2px_10px_rgba(103,62,232,0.08)] transition-all cursor-pointer active:scale-98"
         >
           <LogOut className="w-4 h-4 shrink-0 text-[#e11d48]" />
-          <span className="hidden md:inline">Log Out</span>
+          <span className="inline">Log Out</span>
         </button>
       </div>
     </aside>

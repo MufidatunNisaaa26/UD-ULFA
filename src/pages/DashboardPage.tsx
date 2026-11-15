@@ -33,7 +33,7 @@ export function DashboardPage() {
   } = useDashboard()
 
   return (
-    <div className="h-screen max-h-screen w-full flex relative overflow-hidden select-none">
+    <div className="h-screen max-h-screen w-full min-w-[1080px] flex relative overflow-hidden select-none">
       {/* Background Organik Ungu (Sama persis dengan halaman Auth) */}
       <OrganicPurpleBackground />
 

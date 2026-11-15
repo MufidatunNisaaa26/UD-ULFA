@@ -303,7 +303,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
         <form onSubmit={handleFormSubmit} className="flex-1 flex flex-col justify-between min-h-0">
           <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6 min-h-0">
             {/* Baris 1: Nama Produk & Kategori */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               {/* Nama Produk */}
               <div>
                 <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
@@ -360,7 +360,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
             </div>
 
             {/* Baris 2: Harga & Stok */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               {/* Harga */}
               <div>
                 <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
