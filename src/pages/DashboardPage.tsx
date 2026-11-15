@@ -26,6 +26,8 @@ export function DashboardPage() {
     setProductViewMode,
     currentDate,
     isLogoutModalOpen,
+    isSidebarCollapsed,
+    toggleSidebar,
     handleTabChange,
     handleLogout,
     handleCloseLogoutModal,
@@ -37,12 +39,14 @@ export function DashboardPage() {
       {/* Background Organik Ungu (Sama persis dengan halaman Auth) */}
       <OrganicPurpleBackground />
 
-      {/* 1. Sidebar Kiri */}
+      {/* 1. Sidebar Kiri (Bisa Dilebarkan & Ditutup) */}
       <DashboardSidebar
         activeUser={activeUser}
         currentTab={currentTab}
         onTabChange={handleTabChange}
         onLogout={handleLogout}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
       />
 
       {/* 2. Area Konten Utama */}

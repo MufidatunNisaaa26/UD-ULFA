@@ -48,6 +48,7 @@ export function useDashboard() {
   const [productViewMode, setProductViewMode] = useState<ProductViewMode>('list')
   const [currentDate] = useState(getFormattedCurrentDate)
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   const handleTabChange = (tabId: string) => {
     setCurrentTab(tabId)
@@ -57,6 +58,10 @@ export function useDashboard() {
     if (tabId !== 'produk') {
       setProductViewMode('list')
     }
+  }
+
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed((prev) => !prev)
   }
 
   const handleOpenLogoutModal = () => {
@@ -84,6 +89,8 @@ export function useDashboard() {
     setProductViewMode,
     currentDate,
     isLogoutModalOpen,
+    isSidebarCollapsed,
+    toggleSidebar,
     handleTabChange,
     handleLogout: handleOpenLogoutModal,
     handleCloseLogoutModal,
