@@ -36,8 +36,10 @@ export function DashboardSidebar({
   return (
     <aside
       className={`${
-        isCollapsed ? 'w-16 p-2.5 sm:p-3' : 'w-56 xl:w-64 p-3.5 sm:p-4 md:p-5'
-      } bg-[#ede7fa] border-r border-purple-200/40 flex flex-col justify-between select-none shrink-0 h-full relative z-10 transition-all duration-300 ease-in-out`}
+        isCollapsed
+          ? 'w-16 p-2.5 sm:p-3 bg-transparent border-transparent'
+          : 'w-56 xl:w-64 p-3.5 sm:p-4 md:p-5 bg-[#ede7fa] border-r border-purple-200/40'
+      } flex flex-col justify-between select-none shrink-0 h-full relative z-10 transition-all duration-300 ease-in-out`}
     >
       {/* Top Section: Branding & Navigation */}
       <div className="flex flex-col">
