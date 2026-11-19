@@ -22,10 +22,10 @@ interface SettingsState {
 
 export const useSettingsStore = create<SettingsState>(() => ({
   accountInfo: {
-    username: 'admin_udulfa',
-    email: 'admin@udulfa.com',
-    whatsapp: '+62 812-3456-7890',
-    tanggalDibuat: '12 Oktober 2026',
+    username: 'UDULFA',
+    email: 'Belum didaftarkan',
+    whatsapp: 'Belum didaftarkan',
+    tanggalDibuat: '19 November 2026',
     statusAkun: 'Aktif',
   },
   securityInfo: {
