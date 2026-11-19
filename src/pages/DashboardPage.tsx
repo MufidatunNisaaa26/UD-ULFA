@@ -62,7 +62,11 @@ export function DashboardPage() {
             isSidebarCollapsed
               ? 'px-3 sm:pl-3 sm:pr-6 lg:pr-8'
               : 'px-3 sm:px-6 lg:px-8'
-          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col scroll-smooth overflow-y-auto overflow-x-hidden`}
+          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col scroll-smooth ${
+            currentTab === 'dashboard' && dashboardSubView === 'overview'
+              ? 'overflow-y-auto lg:overflow-hidden'
+              : 'overflow-y-auto overflow-x-hidden'
+          }`}
         >
           {/* Header Konten: Breadcrumb di Kiri & Tanggal di Kanan */}
           <header className="w-full flex items-center justify-between pb-2.5 sm:pb-3 gap-2 shrink-0">
@@ -170,30 +174,30 @@ export function DashboardPage() {
               ) : dashboardSubView === 'financial-detail' ? (
                 <FinanceView />
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 pb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-3.5 sm:gap-4 lg:gap-4 flex-1 min-h-0 pb-6 lg:pb-0">
                   {/* Kartu 1 (Kiri Atas): Grafik Total Produk */}
-                  <div className="min-h-[300px]">
+                  <div className="min-h-[260px] lg:min-h-0 h-full overflow-hidden">
                     <ProductDonutChart
                       onViewAll={() => setDashboardSubView('product-detail')}
                     />
                   </div>
 
                   {/* Kartu 2 (Kanan Atas): Riwayat Struk Transaksi */}
-                  <div className="min-h-[290px]">
+                  <div className="min-h-[260px] lg:min-h-0 h-full overflow-hidden">
                     <TransactionReceiptHistory
                       onViewAll={() => setDashboardSubView('receipt-detail')}
                     />
                   </div>
 
                   {/* Kartu 3 (Kiri Bawah): Status Stok */}
-                  <div className="min-h-[220px]">
+                  <div className="min-h-[190px] lg:min-h-0 h-full overflow-hidden">
                     <StockStatusCard
                       onViewAll={() => setDashboardSubView('stock-detail')}
                     />
                   </div>
 
                   {/* Kartu 4 (Kanan Bawah): Keuangan & Laba */}
-                  <div className="min-h-[220px]">
+                  <div className="min-h-[190px] lg:min-h-0 h-full overflow-hidden">
                     <FinancialSummaryCard
                       onViewAll={() => setDashboardSubView('financial-detail')}
                     />

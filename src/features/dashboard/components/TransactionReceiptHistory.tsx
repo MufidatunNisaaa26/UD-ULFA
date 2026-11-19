@@ -23,7 +23,7 @@ export function TransactionReceiptHistory({
     api.transaksi
       .getLaporan()
       .then((data) => {
-        const mapped = data.slice(0, 5).map((r) => {
+        const mapped = data.slice(0, 3).map((r) => {
           const d = new Date(r.tanggal)
           const time = d.toLocaleTimeString('id-ID', {
             hour: '2-digit',
@@ -45,14 +45,14 @@ export function TransactionReceiptHistory({
   }, [])
 
   return (
-    <div className="bg-white rounded-[15px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
+    <div className="bg-white rounded-[15px] p-3.5 sm:p-5 lg:p-4 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[15px] bg-[#f2ecfd] text-[#673ee8] flex items-center justify-center shrink-0">
-            <ReceiptText className="w-5 h-5" />
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[15px] bg-[#f2ecfd] text-[#673ee8] flex items-center justify-center shrink-0">
+            <ReceiptText className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
           </div>
-          <h3 className="text-base font-bold text-[#1e153b] tracking-tight">
+          <h3 className="text-sm sm:text-base font-bold text-[#1e153b] tracking-tight">
             Riwayat Struk Transaksi
           </h3>
         </div>

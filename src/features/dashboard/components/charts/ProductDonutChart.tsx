@@ -92,27 +92,27 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
   }
 
   return (
-    <div className="bg-white rounded-[15px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
+    <div className="bg-white rounded-[15px] p-3.5 sm:p-5 lg:p-4 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[15px] bg-[#f2ecfd] text-[#673ee8] flex items-center justify-center shrink-0">
-            <Package className="w-5 h-5" />
+      <div className="flex items-center justify-between mb-2 sm:mb-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[15px] bg-[#f2ecfd] text-[#673ee8] flex items-center justify-center shrink-0">
+            <Package className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
           </div>
-          <h3 className="text-base font-bold text-[#1e153b] tracking-tight">
+          <h3 className="text-sm sm:text-base font-bold text-[#1e153b] tracking-tight">
             Grafik Total Produk
           </h3>
         </div>
 
-        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#f4effe] text-[#673ee8]">
+        <span className="text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-[#f4effe] text-[#673ee8]">
           3 Kategori
         </span>
       </div>
 
       {/* Donut Chart & Legend Visual Selalu Ditampilkan */}
-      <div className="flex-1 flex flex-col sm:flex-row items-center justify-around gap-6 my-auto">
+      <div className="flex-1 flex flex-col sm:flex-row items-center justify-around gap-3 sm:gap-6 my-auto min-h-0">
         {/* Donut Ring */}
-        <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
+        <div className="relative w-32 h-32 sm:w-36 sm:h-36 xl:w-40 xl:h-40 flex items-center justify-center shrink-0">
           <svg
             width="100%"
             height="100%"
