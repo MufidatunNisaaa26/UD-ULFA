@@ -17,7 +17,6 @@ import { OrganicPurpleBackground } from '../features/auth/components/OrganicPurp
 
 export function DashboardPage() {
   const {
-    activeUser,
     currentTab,
     setCurrentTab,
     dashboardSubView,
@@ -49,7 +48,6 @@ export function DashboardPage() {
 
       {/* 1. Sidebar Kiri (Bisa Dilebarkan & Ditutup, Drawer di HP) */}
       <DashboardSidebar
-        activeUser={activeUser}
         currentTab={currentTab}
         onTabChange={handleTabChange}
         onLogout={handleLogout}
@@ -64,17 +62,7 @@ export function DashboardPage() {
             isSidebarCollapsed
               ? 'px-3 sm:pl-3 sm:pr-6 lg:pr-8'
               : 'px-3 sm:px-6 lg:px-8'
-          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col scroll-smooth ${
-            currentTab === 'transaksi' ||
-            currentTab === 'produk' ||
-            currentTab === 'keuangan' ||
-            (currentTab === 'dashboard' &&
-              (dashboardSubView === 'receipt-detail' ||
-                dashboardSubView === 'stock-detail' ||
-                dashboardSubView === 'financial-detail'))
-              ? 'overflow-y-auto lg:overflow-hidden'
-              : 'overflow-y-auto'
-          }`}
+          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col scroll-smooth overflow-y-auto overflow-x-hidden`}
         >
           {/* Header Konten: Breadcrumb di Kiri & Tanggal di Kanan */}
           <header className="w-full flex items-center justify-between pb-2.5 sm:pb-3 gap-2 shrink-0">
@@ -164,26 +152,14 @@ export function DashboardPage() {
             </div>
 
             {/* Badge Tanggal */}
-            <div className={`flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white shadow-[0_2px_8px_rgba(103,62,232,0.06)] text-[11px] sm:text-sm font-semibold text-slate-800 shrink-0 ${
-              currentTab === 'pengaturan' ? 'rounded-full' : 'rounded-[15px]'
-            }`}>
-              {currentTab === 'pengaturan' ? (
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-              ) : (
-                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#673ee8] shrink-0" />
-              )}
+            <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white rounded-[15px] shadow-[0_2px_8px_rgba(103,62,232,0.06)] text-[11px] sm:text-sm font-semibold text-slate-800 shrink-0">
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#673ee8] shrink-0" />
               <span className="truncate max-w-[130px] sm:max-w-none">{currentDate}</span>
             </div>
           </header>
 
           {/* Area Kartu Konten */}
-          <div
-            className={`w-full flex flex-col ${
-              currentTab === 'dashboard' && dashboardSubView === 'product-detail'
-                ? 'min-h-full'
-                : 'lg:flex-1 lg:min-h-0 lg:h-full lg:overflow-hidden'
-            }`}
-          >
+          <div className="w-full flex-1 flex flex-col min-h-0">
             {currentTab === 'dashboard' ? (
               dashboardSubView === 'product-detail' ? (
                 <ProductDetailView />
@@ -194,30 +170,30 @@ export function DashboardPage() {
               ) : dashboardSubView === 'financial-detail' ? (
                 <FinanceView />
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 lg:h-full lg:max-h-full pb-6 lg:pb-0">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 pb-6">
                   {/* Kartu 1 (Kiri Atas): Grafik Total Produk */}
-                  <div className="min-h-[300px] lg:h-full">
+                  <div className="min-h-[300px]">
                     <ProductDonutChart
                       onViewAll={() => setDashboardSubView('product-detail')}
                     />
                   </div>
 
                   {/* Kartu 2 (Kanan Atas): Riwayat Struk Transaksi */}
-                  <div className="min-h-[290px] lg:h-full">
+                  <div className="min-h-[290px]">
                     <TransactionReceiptHistory
                       onViewAll={() => setDashboardSubView('receipt-detail')}
                     />
                   </div>
 
                   {/* Kartu 3 (Kiri Bawah): Status Stok */}
-                  <div className="min-h-[220px] lg:h-full">
+                  <div className="min-h-[220px]">
                     <StockStatusCard
                       onViewAll={() => setDashboardSubView('stock-detail')}
                     />
                   </div>
 
                   {/* Kartu 4 (Kanan Bawah): Keuangan & Laba */}
-                  <div className="min-h-[220px] lg:h-full">
+                  <div className="min-h-[220px]">
                     <FinancialSummaryCard
                       onViewAll={() => setDashboardSubView('financial-detail')}
                     />

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Package, ChevronRight } from 'lucide-react'
+import { useProductStore } from '../../stores/useProductStore'
 
 interface ProductDonutChartProps {
   onViewAll?: () => void
@@ -12,12 +13,6 @@ interface CategoryItem {
   color: string
 }
 
-const CATEGORIES: CategoryItem[] = [
-  { name: 'ATK', count: 56, percent: 43, color: '#673ee8' },
-  { name: 'Perlengkapan Sekolah', count: 48, percent: 37, color: '#8e63f5' },
-  { name: 'Perlengkapan Jenazah', count: 26, percent: 20, color: '#bca5fb' },
-]
-
 // Geometry constants
 const SIZE = 180
 const CX = SIZE / 2
@@ -27,36 +22,70 @@ const RADIUS = 64
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const POP_DISTANCE = 7
 
-// Pure pre-computation of segments with radial pop-out vectors
-function getDonutSegments() {
-  let acc = 0
-  return CATEGORIES.map((cat) => {
-    const length = (cat.percent / 100) * CIRCUMFERENCE
-    const offset = acc
-
-    // Calculate mid-angle in radians for radial pop-out
-    const startAngle = (offset / CIRCUMFERENCE) * 2 * Math.PI
-    const endAngle = ((offset + length) / CIRCUMFERENCE) * 2 * Math.PI
-    const midAngle = (startAngle + endAngle) / 2
-
-    const popX = Math.cos(midAngle) * POP_DISTANCE
-    const popY = Math.sin(midAngle) * POP_DISTANCE
-
-    acc += length
-    return {
-      ...cat,
-      length,
-      offset,
-      popX,
-      popY,
-    }
-  })
-}
-
-const SEGMENTS = getDonutSegments()
-
 export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
+  const { products } = useProductStore()
   const [activeCategory, setActiveCategory] = useState<CategoryItem | null>(null)
+
+  const { categories, totalProducts, segments } = useMemo(() => {
+    const total = products.length
+    const atkCount = products.filter((p) => p.kategori === 'ATK').length
+    const sekolahCount = products.filter((p) => p.kategori === 'Perlengkapan Sekolah').length
+    const jenazahCount = products.filter((p) => p.kategori === 'Perlengkapan Jenazah').length
+
+    const cats: CategoryItem[] = [
+      {
+        name: 'ATK',
+        count: atkCount,
+        percent: total > 0 ? Math.round((atkCount / total) * 100) : 0,
+        color: '#673ee8',
+      },
+      {
+        name: 'Perlengkapan Sekolah',
+        count: sekolahCount,
+        percent: total > 0 ? Math.round((sekolahCount / total) * 100) : 0,
+        color: '#8e63f5',
+      },
+      {
+        name: 'Perlengkapan Jenazah',
+        count: jenazahCount,
+        percent: total > 0 ? Math.round((jenazahCount / total) * 100) : 0,
+        color: '#bca5fb',
+      },
+    ]
+
+    // Hitung segmen SVG dinamis
+    let acc = 0
+    const segs = total > 0
+      ? cats
+          .filter((c) => c.count > 0)
+          .map((cat) => {
+            const length = (cat.count / total) * CIRCUMFERENCE
+            const offset = acc
+
+            const startAngle = (offset / CIRCUMFERENCE) * 2 * Math.PI
+            const endAngle = ((offset + length) / CIRCUMFERENCE) * 2 * Math.PI
+            const midAngle = (startAngle + endAngle) / 2
+
+            const popX = Math.cos(midAngle) * POP_DISTANCE
+            const popY = Math.sin(midAngle) * POP_DISTANCE
+
+            acc += length
+            return {
+              ...cat,
+              length,
+              offset,
+              popX,
+              popY,
+            }
+          })
+      : []
+
+    return {
+      categories: cats,
+      totalProducts: total,
+      segments: segs,
+    }
+  }, [products])
 
   const handleToggleCategory = (cat: CategoryItem) => {
     setActiveCategory((prev) => (prev?.name === cat.name ? null : cat))
@@ -80,7 +109,7 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
         </span>
       </div>
 
-      {/* Donut Chart & Legend */}
+      {/* Donut Chart & Legend Visual Selalu Ditampilkan */}
       <div className="flex-1 flex flex-col sm:flex-row items-center justify-around gap-6 my-auto">
         {/* Donut Ring */}
         <div className="relative w-44 h-44 flex items-center justify-center shrink-0">
@@ -104,18 +133,18 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
 
             {/* Rotated group for donut segments */}
             <g transform={`rotate(-90 ${CX} ${CY})`}>
-              {/* Background Track Ring */}
+              {/* Background Track Ring (Placeholder lingkaran saat data kosong) */}
               <circle
                 cx={CX}
                 cy={CY}
                 r={RADIUS}
-                stroke="#f4effe"
+                stroke="#ede7fa"
                 strokeWidth={STROKE_WIDTH}
                 fill="none"
               />
 
-              {/* Slices with Radial Pop-Out on Cursor Hover or Click */}
-              {SEGMENTS.map((seg) => {
+              {/* Slices with Radial Pop-Out saat ada data produk */}
+              {segments.map((seg) => {
                 const isSelected = activeCategory?.name === seg.name
 
                 return (
@@ -145,41 +174,39 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
               })}
             </g>
 
-            {/* Informative Center Label when a category is popped out */}
-            {activeCategory && (
-              <g className="pointer-events-none select-none transition-all duration-300">
-                <text
-                  x={CX}
-                  y={CY - 6}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill="#111827"
-                  style={{ fontSize: '22px', fontWeight: 900 }}
-                >
-                  {activeCategory.count}
-                </text>
-                <text
-                  x={CX}
-                  y={CY + 12}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill="#63537e"
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  PRODUK
-                </text>
-              </g>
-            )}
+            {/* Center Label: Menampilkan angka produk riil (0 jika belum ada produk) */}
+            <g className="pointer-events-none select-none transition-all duration-300">
+              <text
+                x={CX}
+                y={CY - 6}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="#1e153b"
+                style={{ fontSize: '24px', fontWeight: 900 }}
+              >
+                {activeCategory ? activeCategory.count : totalProducts}
+              </text>
+              <text
+                x={CX}
+                y={CY + 14}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="#7a6b99"
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                }}
+              >
+                PRODUK
+              </text>
+            </g>
           </svg>
         </div>
 
-        {/* Legend */}
+        {/* Legend 3 Kategori */}
         <div className="flex flex-col gap-2.5 w-full sm:w-auto min-w-[215px]">
-          {CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const isSelected = activeCategory?.name === cat.name
 
             return (

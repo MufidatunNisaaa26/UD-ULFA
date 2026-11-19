@@ -1,10 +1,38 @@
+import { useMemo } from 'react'
 import { TrendingUp, ChevronRight } from 'lucide-react'
+import { useFinanceStore } from '../stores/useFinanceStore'
 
 interface FinancialSummaryCardProps {
   onViewAll?: () => void
 }
 
 export function FinancialSummaryCard({ onViewAll }: FinancialSummaryCardProps) {
+  const { transactions } = useFinanceStore()
+
+  const { totalPemasukan, totalPengeluaran, marginStr } = useMemo(() => {
+    let masuk = 0
+    let keluar = 0
+
+    for (const t of transactions) {
+      if (t.kategori === 'Pemasukan') {
+        masuk += t.nominal
+      } else if (t.kategori === 'Pengeluaran') {
+        keluar += t.nominal
+      }
+    }
+
+    let margin = 0
+    if (masuk > 0) {
+      margin = ((masuk - keluar) / masuk) * 100
+    }
+
+    return {
+      totalPemasukan: masuk,
+      totalPengeluaran: keluar,
+      marginStr: `${margin.toFixed(1)}%`,
+    }
+  }, [transactions])
+
   return (
     <div className="bg-white rounded-[15px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
       {/* Header */}
@@ -19,7 +47,7 @@ export function FinancialSummaryCard({ onViewAll }: FinancialSummaryCardProps) {
         </div>
 
         <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#ecfdf5] text-emerald-700 border border-emerald-200/60">
-          Margin 24.2%
+          Margin {marginStr}
         </span>
       </div>
 
@@ -32,7 +60,7 @@ export function FinancialSummaryCard({ onViewAll }: FinancialSummaryCardProps) {
             <span>Pemasukan</span>
           </div>
           <p className="text-lg sm:text-xl font-black text-slate-900 mt-2 mb-0.5 tracking-tight">
-            Rp 4.825.000
+            Rp {totalPemasukan.toLocaleString('id-ID')}
           </p>
           <p className="text-[11px] text-slate-500 font-medium">Total Masuk</p>
         </div>
@@ -44,7 +72,7 @@ export function FinancialSummaryCard({ onViewAll }: FinancialSummaryCardProps) {
             <span>Pengeluaran</span>
           </div>
           <p className="text-lg sm:text-xl font-black text-slate-900 mt-2 mb-0.5 tracking-tight">
-            Rp 3.665.000
+            Rp {totalPengeluaran.toLocaleString('id-ID')}
           </p>
           <p className="text-[11px] text-slate-500 font-medium">Total Keluar</p>
         </div>
@@ -66,4 +94,3 @@ export function FinancialSummaryCard({ onViewAll }: FinancialSummaryCardProps) {
 }
 
 export default FinancialSummaryCard
-

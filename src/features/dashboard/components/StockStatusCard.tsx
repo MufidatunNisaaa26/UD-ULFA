@@ -1,10 +1,32 @@
+import { useMemo } from 'react'
 import { ClipboardCheck, ChevronRight } from 'lucide-react'
+import { useProductStore } from '../stores/useProductStore'
 
 interface StockStatusCardProps {
   onViewAll?: () => void
 }
 
 export function StockStatusCard({ onViewAll }: StockStatusCardProps) {
+  const { products } = useProductStore()
+
+  const { tersedia, menipis, habis } = useMemo(() => {
+    let t = 0
+    let m = 0
+    let h = 0
+
+    for (const p of products) {
+      if (p.stokJumlah === 0) {
+        h++
+      } else if (p.stokJumlah <= 10) {
+        m++
+      } else {
+        t++
+      }
+    }
+
+    return { tersedia: t, menipis: m, habis: h }
+  }, [products])
+
   return (
     <div className="bg-white rounded-[15px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
       {/* Header */}
@@ -28,7 +50,7 @@ export function StockStatusCard({ onViewAll }: StockStatusCardProps) {
             <span>Tersedia</span>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-emerald-950 mt-1.5 mb-0.5 tracking-tight">
-            115
+            {tersedia}
           </p>
           <p className="text-xs font-semibold text-emerald-700">Produk</p>
         </div>
@@ -40,7 +62,7 @@ export function StockStatusCard({ onViewAll }: StockStatusCardProps) {
             <span>Menipis</span>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-amber-950 mt-1.5 mb-0.5 tracking-tight">
-            12
+            {menipis}
           </p>
           <p className="text-xs font-semibold text-amber-700">Produk</p>
         </div>
@@ -52,7 +74,7 @@ export function StockStatusCard({ onViewAll }: StockStatusCardProps) {
             <span>Habis</span>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-rose-950 mt-1.5 mb-0.5 tracking-tight">
-            3
+            {habis}
           </p>
           <p className="text-xs font-semibold text-rose-700">Produk</p>
         </div>
@@ -74,4 +96,3 @@ export function StockStatusCard({ onViewAll }: StockStatusCardProps) {
 }
 
 export default StockStatusCard
-

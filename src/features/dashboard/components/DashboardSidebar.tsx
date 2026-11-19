@@ -7,10 +7,8 @@ import {
   LogOut,
   Store,
 } from 'lucide-react'
-import type { UserAccount } from '../../auth/data/registeredAccounts'
 
 interface DashboardSidebarProps {
-  activeUser?: UserAccount
   currentTab: string
   onTabChange: (tabId: string) => void
   onLogout: () => void
@@ -35,7 +33,7 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   return (
     <aside
-      className={`flex flex-col justify-between select-none shrink-0 h-full transition-all duration-300 ease-in-out ${
+      className={`flex flex-col justify-between select-none shrink-0 h-full overflow-y-auto transition-all duration-300 ease-in-out ${
         isCollapsed
           ? 'fixed -translate-x-full md:relative md:translate-x-0 w-0 p-0 overflow-hidden md:w-16 md:pl-3.5 md:pr-1 md:pt-3 md:pb-3 bg-transparent md:bg-transparent border-0 md:border-transparent z-10 shadow-none'
           : 'fixed inset-y-0 left-0 z-50 w-64 p-4 bg-[#ede7fa] shadow-2xl translate-x-0 md:relative md:z-10 md:shadow-none md:w-56 xl:w-64 md:p-4 md:border-r md:border-purple-200/40'

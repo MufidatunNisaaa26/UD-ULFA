@@ -11,7 +11,11 @@ function getInitialDateString() {
 }
 
 export function useFinance() {
-  const { transactions, addExpense } = useFinanceStore()
+  const { transactions, addExpense, fetchTransactions } = useFinanceStore()
+
+  useEffect(() => {
+    fetchTransactions()
+  }, [fetchTransactions])
 
   // Search Filter
   const [searchQuery, setSearchQuery] = useState('')

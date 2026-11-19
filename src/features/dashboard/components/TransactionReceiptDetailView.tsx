@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   Search,
   Download,
@@ -7,6 +7,7 @@ import {
   Check,
   ArrowLeft,
 } from 'lucide-react'
+import { api } from '../../../services/api'
 
 export interface ReceiptItemLine {
   name: string
@@ -16,6 +17,7 @@ export interface ReceiptItemLine {
 }
 
 export interface TransactionReceipt {
+  backendId: number
   no: number
   id: string
   totalPcs: number
@@ -28,213 +30,104 @@ export interface TransactionReceipt {
   diskon: number
 }
 
-const ALL_TRANSACTIONS: TransactionReceipt[] = [
-  {
-    no: 1,
-    id: 'TR-20261108-0128',
-    totalPcs: 6,
-    totalAmount: 38500,
-    waktu: '17:42 WIB',
-    dateStr: '08/11/2026 17:42 WIB',
-    tunai: 50000,
-    kembalian: 11500,
-    diskon: 0,
-    items: [
-      { name: 'Buku Tulis SiDU 38 lbr', qty: 3, price: 4500, total: 13500 },
-      { name: 'Pensil 2B Faber-Castell', qty: 2, price: 5000, total: 10000 },
-      { name: 'Penghapus Joyko Hitam', qty: 1, price: 15000, total: 15000 },
-    ],
-  },
-  {
-    no: 2,
-    id: 'TR-20261108-0127',
-    totalPcs: 2,
-    totalAmount: 61000,
-    waktu: '17:15 WIB',
-    dateStr: '08/11/2026 17:15 WIB',
-    tunai: 100000,
-    kembalian: 39000,
-    diskon: 0,
-    items: [
-      { name: 'Kain Kafan Mori 12m', qty: 1, price: 55000, total: 55000 },
-      { name: 'Kapur Barus Bulat 50gr', qty: 1, price: 6000, total: 6000 },
-    ],
-  },
-  {
-    no: 3,
-    id: 'TR-20261108-0126',
-    totalPcs: 13,
-    totalAmount: 47000,
-    waktu: '16:50 WIB',
-    dateStr: '08/11/2026 16:50 WIB',
-    tunai: 50000,
-    kembalian: 3000,
-    diskon: 0,
-    items: [
-      { name: 'Penggaris Besi 30cm', qty: 3, price: 6000, total: 18000 },
-      { name: 'Sampul Buku Coklat', qty: 10, price: 2900, total: 29000 },
-    ],
-  },
-  {
-    no: 4,
-    id: 'TR-20261108-0125',
-    totalPcs: 2,
-    totalAmount: 84000,
-    waktu: '16:22 WIB',
-    dateStr: '08/11/2026 16:22 WIB',
-    tunai: 100000,
-    kembalian: 16000,
-    diskon: 0,
-    items: [
-      { name: 'Tas Ransel Anak SD', qty: 1, price: 75000, total: 75000 },
-      { name: 'Tempat Pensil Karakter', qty: 1, price: 9000, total: 9000 },
-    ],
-  },
-  {
-    no: 5,
-    id: 'TR-20261108-0124',
-    totalPcs: 3,
-    totalAmount: 32500,
-    waktu: '15:58 WIB',
-    dateStr: '08/11/2026 15:58 WIB',
-    tunai: 50000,
-    kembalian: 17500,
-    diskon: 0,
-    items: [
-      { name: 'Tipe-X Kertas Joyko', qty: 2, price: 10000, total: 20000 },
-      { name: 'Spidol Snowman Hitam', qty: 1, price: 12500, total: 12500 },
-    ],
-  },
-  {
-    no: 6,
-    id: 'TR-20261108-0123',
-    totalPcs: 3,
-    totalAmount: 54000,
-    waktu: '15:30 WIB',
-    dateStr: '08/11/2026 15:30 WIB',
-    tunai: 60000,
-    kembalian: 6000,
-    diskon: 0,
-    items: [
-      { name: 'Minyak Wangi Melati 100ml', qty: 1, price: 35000, total: 35000 },
-      { name: 'Sabun Mandi Jenazah', qty: 2, price: 9500, total: 19000 },
-    ],
-  },
-  {
-    no: 7,
-    id: 'TR-20261108-0122',
-    totalPcs: 3,
-    totalAmount: 31000,
-    waktu: '14:45 WIB',
-    dateStr: '08/11/2026 14:45 WIB',
-    tunai: 50000,
-    kembalian: 19000,
-    diskon: 0,
-    items: [
-      { name: 'Buku Gambar A3', qty: 2, price: 11000, total: 22000 },
-      { name: 'Crayon Titi 12 Warna', qty: 1, price: 9000, total: 9000 },
-    ],
-  },
-  {
-    no: 8,
-    id: 'TR-20261108-0121',
-    totalPcs: 4,
-    totalAmount: 26500,
-    waktu: '14:10 WIB',
-    dateStr: '08/11/2026 14:10 WIB',
-    tunai: 30000,
-    kembalian: 3500,
-    diskon: 0,
-    items: [
-      { name: 'Sticky Notes Joyko 3x3', qty: 2, price: 7500, total: 15000 },
-      { name: 'Klip Kertas Warna', qty: 2, price: 5750, total: 11500 },
-    ],
-  },
-  {
-    no: 9,
-    id: 'TR-20261108-0120',
-    totalPcs: 7,
-    totalAmount: 49000,
-    waktu: '13:35 WIB',
-    dateStr: '08/11/2026 13:35 WIB',
-    tunai: 50000,
-    kembalian: 1000,
-    diskon: 0,
-    items: [
-      { name: 'Map Plastik L Transparan', qty: 5, price: 4000, total: 20000 },
-      { name: 'Kertas Folio Bergaris', qty: 2, price: 14500, total: 29000 },
-    ],
-  },
-  {
-    no: 10,
-    id: 'TR-20261108-0119',
-    totalPcs: 5,
-    totalAmount: 74000,
-    waktu: '12:50 WIB',
-    dateStr: '08/11/2026 12:50 WIB',
-    tunai: 100000,
-    kembalian: 26000,
-    diskon: 0,
-    items: [
-      { name: 'Buku Tulis SiDU 38 lbr', qty: 2, price: 4500, total: 9000 },
-      { name: 'Bolpoin Pilot G2 0.5', qty: 1, price: 15000, total: 15000 },
-      { name: 'Kain Kafan Mori Super 1m', qty: 2, price: 25000, total: 50000 },
-    ],
-  },
-  {
-    no: 11,
-    id: 'TR-20261108-0118',
-    totalPcs: 8,
-    totalAmount: 52000,
-    waktu: '11:30 WIB',
-    dateStr: '08/11/2026 11:30 WIB',
-    tunai: 60000,
-    kembalian: 8000,
-    diskon: 0,
-    items: [
-      { name: 'Amplop Putih Garis (1 Pack)', qty: 2, price: 16000, total: 32000 },
-      { name: 'Lem Kertas Glukol Sedang', qty: 6, price: 3333, total: 20000 },
-    ],
-  },
-  {
-    no: 12,
-    id: 'TR-20261108-0117',
-    totalPcs: 1,
-    totalAmount: 18000,
-    waktu: '10:15 WIB',
-    dateStr: '08/11/2026 10:15 WIB',
-    tunai: 20000,
-    kembalian: 2000,
-    diskon: 0,
-    items: [
-      { name: 'Kapur Barus Pengawet 500gr', qty: 1, price: 18000, total: 18000 },
-    ],
-  },
-]
-
 export function TransactionReceiptDetailView() {
+  const [transactions, setTransactions] = useState<TransactionReceipt[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedReceiptId, setSelectedReceiptId] = useState('TR-20261108-0128')
+  const [selectedReceiptId, setSelectedReceiptId] = useState('')
   const [mobileActiveTab, setMobileActiveTab] = useState<'list' | 'preview'>('list')
+
+  useEffect(() => {
+    api.transaksi
+      .getLaporan()
+      .then((list) => {
+        if (!list || list.length === 0) {
+          setTransactions([])
+          return
+        }
+        const mapped: TransactionReceipt[] = list.map((item, idx) => {
+          const d = new Date(item.tanggal)
+          const waktu = d.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+          const dateStr = `${d.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          })}, ${waktu} WIB`
+
+          return {
+            backendId: item.id,
+            no: idx + 1,
+            id: item.no_transaksi,
+            totalPcs: 1,
+            totalAmount: Number(item.total_harga) || 0,
+            waktu,
+            dateStr,
+            items: [],
+            tunai: Number(item.total_harga) || 0,
+            kembalian: 0,
+            diskon: 0,
+          }
+        })
+        setTransactions(mapped)
+        if (mapped[0]) {
+          setSelectedReceiptId(mapped[0].id)
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat daftar laporan:', err)
+      })
+  }, [])
+
+  // Muat detail item saat struk dipilih
+  useEffect(() => {
+    const trx = transactions.find((t) => t.id === selectedReceiptId)
+    if (!trx || trx.items.length > 0) return
+
+    api.transaksi
+      .getDetailLaporan(trx.backendId)
+      .then((detail) => {
+        const detailItems = (detail.items || []).map((i) => ({
+          name: i.nama || `Produk #${i.produk_id}`,
+          qty: i.jumlah,
+          price: i.jumlah > 0 ? (i.subtotal || 0) / i.jumlah : 0,
+          total: i.subtotal || 0,
+        }))
+        const totalPcs = detailItems.reduce((acc, curr) => acc + curr.qty, 0)
+        setTransactions((prev) =>
+          prev.map((t) =>
+            t.id === trx.id
+              ? {
+                  ...t,
+                  items: detailItems,
+                  totalPcs: totalPcs || 1,
+                }
+              : t
+          )
+        )
+      })
+      .catch(() => {})
+  }, [selectedReceiptId, transactions])
 
   // Temukan struk yang sedang dipilih
   const currentReceipt = useMemo(() => {
     return (
-      ALL_TRANSACTIONS.find((t) => t.id === selectedReceiptId) ||
-      ALL_TRANSACTIONS[0]
+      transactions.find((t) => t.id === selectedReceiptId) ||
+      transactions[0]
     )
-  }, [selectedReceiptId])
+  }, [transactions, selectedReceiptId])
 
   // Filter daftar struk
   const filteredTransactions = useMemo(() => {
     const q = searchQuery.toLowerCase().trim()
-    return ALL_TRANSACTIONS.filter((trx) => {
+    return transactions.filter((trx) => {
       const matchSearch =
         trx.id.toLowerCase().includes(q) ||
         trx.items.some((item) => item.name.toLowerCase().includes(q))
       return matchSearch
     })
-  }, [searchQuery])
+  }, [transactions, searchQuery])
 
   const handlePrint = () => {
     window.print()
@@ -405,12 +298,19 @@ export function TransactionReceiptDetailView() {
               <span>Daftar Struk ({filteredTransactions.length})</span>
             </button>
             <span className="text-[10px] font-semibold text-slate-400">
-              {currentReceipt.id}
+              {currentReceipt?.id}
             </span>
           </div>
 
           {/* Area Kertas Struk: Full Height, dengan flexible space antara item barang dan total */}
           <div className="flex-1 min-h-0 flex flex-col items-center justify-between w-full">
+            {!currentReceipt ? (
+              <div className="w-full max-w-full sm:max-w-[420px] mx-auto h-full flex-1 bg-[#fcfbfe] border border-slate-200/80 rounded-[15px] p-8 flex flex-col items-center justify-center text-center text-slate-400">
+                <ReceiptText className="w-10 h-10 stroke-1 text-slate-300 mb-2" />
+                <p className="text-xs font-semibold text-slate-600">Belum ada struk untuk ditampilkan</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Daftar transaksi saat ini masih kosong</p>
+              </div>
+            ) : (
             <div
               id="thermal-receipt-print"
               className="w-full max-w-full sm:max-w-[420px] mx-auto h-full flex-1 bg-[#fcfbfe] border border-slate-200/80 rounded-[15px] p-3 sm:p-4 md:p-4.5 font-mono text-slate-800 shadow-2xs flex flex-col justify-between overflow-hidden transition-all"
@@ -502,6 +402,7 @@ export function TransactionReceiptDetailView() {
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           {/* Tombol Aksi Bawah: Pinned di dasar card, kelengkungan 15px */}

@@ -21,7 +21,7 @@ export function FinanceView() {
   } = useFinance()
 
   return (
-    <div className="w-full h-full min-h-0 flex flex-col lg:flex-row gap-3.5 sm:gap-4 select-none overflow-hidden pb-1 relative">
+    <div className="w-full h-full min-h-0 flex flex-col lg:flex-row gap-3.5 sm:gap-4 select-none overflow-y-auto lg:overflow-hidden pb-1 relative">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 animate-in fade-in zoom-in-95 duration-150">
@@ -33,7 +33,7 @@ export function FinanceView() {
       )}
 
       {/* 1. Kolom Kiri: Riwayat Transaksi Keuangan */}
-      <div className="flex-1 bg-white rounded-[20px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/50 flex flex-col h-full min-h-0 overflow-hidden">
+      <div className="flex-1 bg-white rounded-[20px] p-4 sm:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/50 flex flex-col min-h-[360px] lg:h-full lg:min-h-0 overflow-hidden">
         {/* Header Bar: Judul & Search Input */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 shrink-0">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
@@ -135,7 +135,7 @@ export function FinanceView() {
       </div>
 
       {/* 2. Kolom Kanan: Input Pengeluaran & Ringkasan Hari Ini */}
-      <div className="w-full lg:w-80 xl:w-[350px] shrink-0 h-full flex flex-col justify-between bg-white rounded-[20px] p-4 sm:p-5 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-0 overflow-y-auto">
+      <div className="w-full lg:w-80 xl:w-[350px] shrink-0 flex flex-col justify-between bg-white rounded-[20px] p-4 sm:p-5 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-[460px] lg:h-full lg:min-h-0 overflow-y-auto">
         {/* Form Input Pengeluaran */}
         <div className="space-y-3">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { UserAccount } from '../../auth/data/registeredAccounts'
+import { useProductStore } from '../stores/useProductStore'
+import { useFinanceStore } from '../stores/useFinanceStore'
 
 export type DashboardSubView =
   | 'overview'
@@ -22,6 +24,11 @@ function getFormattedCurrentDate() {
 
 export function useDashboard() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    useProductStore.getState().fetchProducts()
+    useFinanceStore.getState().fetchTransactions()
+  }, [])
 
   const [activeUser] = useState<UserAccount>(() => {
     try {
@@ -93,6 +100,7 @@ export function useDashboard() {
   const handleConfirmLogout = () => {
     setIsLogoutModalOpen(false)
     localStorage.removeItem('udulfa_active_user')
+    localStorage.removeItem('udulfa_token')
     sessionStorage.removeItem('udulfa_active_user')
     navigate('/login')
   }

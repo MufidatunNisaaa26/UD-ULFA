@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Search } from 'lucide-react'
+import { useProductStore } from '../stores/useProductStore'
 
 interface IncomingProduct {
   no: number
@@ -10,98 +11,10 @@ interface IncomingProduct {
   jumlahMasuk: string
   hargaBeli: string
   hargaJual: string
+  customImageUrl?: string
 }
 
-const INCOMING_PRODUCTS: IncomingProduct[] = [
-  {
-    no: 1,
-    waktuInput: 'Hari ini, 10:15',
-    fotoIcon: '📓',
-    namaProduk: 'Buku Tulis Sinar Dunia 38 Lembar',
-    kategori: 'ATK',
-    jumlahMasuk: '+50 Pcs',
-    hargaBeli: 'Rp 3.200',
-    hargaJual: 'Rp 4.500',
-  },
-  {
-    no: 2,
-    waktuInput: 'Hari ini, 09:30',
-    fotoIcon: '🎒',
-    namaProduk: 'Tas Sekolah Polo Ransel Hitam',
-    kategori: 'Perlengkapan Sekolah',
-    jumlahMasuk: '+20 Pcs',
-    hargaBeli: 'Rp 75.000',
-    hargaJual: 'Rp 95.000',
-  },
-  {
-    no: 3,
-    waktuInput: 'Hari ini, 08:45',
-    fotoIcon: '🧵',
-    namaProduk: 'Kain Kafan Mori Primissima 12m',
-    kategori: 'Perlengkapan Jenazah',
-    jumlahMasuk: '+15 Roll',
-    hargaBeli: 'Rp 110.000',
-    hargaJual: 'Rp 135.000',
-  },
-  {
-    no: 4,
-    waktuInput: 'Kemarin, 16:20',
-    fotoIcon: '🖊️',
-    namaProduk: 'Pulpen Standard AE7 Hitam (1 Box)',
-    kategori: 'ATK',
-    jumlahMasuk: '+30 Box',
-    hargaBeli: 'Rp 22.000',
-    hargaJual: 'Rp 28.000',
-  },
-  {
-    no: 5,
-    waktuInput: 'Kemarin, 14:10',
-    fotoIcon: '✏️',
-    namaProduk: 'Pensil Warna Faber-Castell 24 Warna',
-    kategori: 'Perlengkapan Sekolah',
-    jumlahMasuk: '+25 Set',
-    hargaBeli: 'Rp 48.000',
-    hargaJual: 'Rp 59.000',
-  },
-  {
-    no: 6,
-    waktuInput: 'Kemarin, 11:35',
-    fotoIcon: '🧴',
-    namaProduk: 'Minyak Wangi Non Alkohol Kasturi 100ml',
-    kategori: 'Perlengkapan Jenazah',
-    jumlahMasuk: '+12 Btl',
-    hargaBeli: 'Rp 35.000',
-    hargaJual: 'Rp 45.000',
-  },
-  {
-    no: 7,
-    waktuInput: '06 Nov, 15:40',
-    fotoIcon: '📄',
-    namaProduk: 'Kertas HVS PaperOne A4 75gr (1 Rim)',
-    kategori: 'ATK',
-    jumlahMasuk: '+40 Rim',
-    hargaBeli: 'Rp 44.500',
-    hargaJual: 'Rp 52.000',
-  },
-  {
-    no: 8,
-    waktuInput: '06 Nov, 10:20',
-    fotoIcon: '🧊',
-    namaProduk: 'Kapur Barus Pengawet Jenazah 500gr',
-    kategori: 'Perlengkapan Jenazah',
-    jumlahMasuk: '+25 Pcs',
-    hargaBeli: 'Rp 18.000',
-    hargaJual: 'Rp 24.000',
-  },
-]
-
-const CATEGORY_STATS = [
-  { name: 'ATK', count: 56, percent: 43, color: '#673ee8' },
-  { name: 'Perlengkapan Sekolah', count: 48, percent: 37, color: '#8e63f5' },
-  { name: 'Perlengkapan Jenazah', count: 26, percent: 20, color: '#bca5fb' },
-]
-
-// Geometry constants for Top Card Donut (sama persis dengan halaman awal dashboard)
+// Geometry constants for Top Card Donut
 const SIZE = 180
 const CX = SIZE / 2
 const CY = SIZE / 2
@@ -110,33 +23,13 @@ const RADIUS = 64
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const POP_DISTANCE = 7
 
-function getDonutSegments() {
-  let acc = 0
-  return CATEGORY_STATS.map((cat) => {
-    const length = (cat.percent / 100) * CIRCUMFERENCE
-    const offset = acc
-
-    const startAngle = (offset / CIRCUMFERENCE) * 2 * Math.PI
-    const endAngle = ((offset + length) / CIRCUMFERENCE) * 2 * Math.PI
-    const midAngle = (startAngle + endAngle) / 2
-
-    const popX = Math.cos(midAngle) * POP_DISTANCE
-    const popY = Math.sin(midAngle) * POP_DISTANCE
-
-    acc += length
-    return {
-      ...cat,
-      length,
-      offset,
-      popX,
-      popY,
-    }
-  })
-}
-
-const SEGMENTS = getDonutSegments()
-
 export function ProductDetailView() {
+  const { products, fetchProducts } = useProductStore()
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
@@ -144,9 +37,82 @@ export function ProductDetailView() {
   // Kategori aktif untuk visual donut dan strip
   const activeCategory = hoveredCategory || selectedCategory
 
-  // Kategori filter untuk data tabel: mengunci berdasarkan selectedCategory (saat diklik),
-  // atau sementara waktu mengikuti hoveredCategory jika belum ada yang diklik
+  // Kategori filter untuk data tabel
   const effectiveFilterCategory = selectedCategory || hoveredCategory
+
+  const incomingProducts = useMemo<IncomingProduct[]>(() => {
+    return products.map((prod, idx) => ({
+      no: idx + 1,
+      waktuInput: 'Tersedia',
+      fotoIcon: '📦',
+      namaProduk: prod.namaProduk,
+      kategori: prod.kategori as 'ATK' | 'Perlengkapan Sekolah' | 'Perlengkapan Jenazah',
+      jumlahMasuk: `${prod.stokJumlah} ${prod.stokSatuan}`,
+      hargaBeli: `Rp ${Math.round(prod.harga * 0.8).toLocaleString('id-ID')}`,
+      hargaJual: `Rp ${prod.harga.toLocaleString('id-ID')}`,
+      customImageUrl: prod.customImageUrl,
+    }))
+  }, [products])
+
+  const { categories, totalProducts, segments } = useMemo(() => {
+    const total = products.length
+    const atkCount = products.filter((p) => p.kategori === 'ATK').length
+    const sekolahCount = products.filter((p) => p.kategori === 'Perlengkapan Sekolah').length
+    const jenazahCount = products.filter((p) => p.kategori === 'Perlengkapan Jenazah').length
+
+    const cats = [
+      {
+        name: 'ATK',
+        count: atkCount,
+        percent: total > 0 ? Math.round((atkCount / total) * 100) : 0,
+        color: '#673ee8',
+      },
+      {
+        name: 'Perlengkapan Sekolah',
+        count: sekolahCount,
+        percent: total > 0 ? Math.round((sekolahCount / total) * 100) : 0,
+        color: '#8e63f5',
+      },
+      {
+        name: 'Perlengkapan Jenazah',
+        count: jenazahCount,
+        percent: total > 0 ? Math.round((jenazahCount / total) * 100) : 0,
+        color: '#bca5fb',
+      },
+    ]
+
+    let acc = 0
+    const segs = total > 0
+      ? cats
+          .filter((c) => c.count > 0)
+          .map((cat) => {
+            const length = (cat.count / total) * CIRCUMFERENCE
+            const offset = acc
+
+            const startAngle = (offset / CIRCUMFERENCE) * 2 * Math.PI
+            const endAngle = ((offset + length) / CIRCUMFERENCE) * 2 * Math.PI
+            const midAngle = (startAngle + endAngle) / 2
+
+            const popX = Math.cos(midAngle) * POP_DISTANCE
+            const popY = Math.sin(midAngle) * POP_DISTANCE
+
+            acc += length
+            return {
+              ...cat,
+              length,
+              offset,
+              popX,
+              popY,
+            }
+          })
+      : []
+
+    return {
+      categories: cats,
+      totalProducts: total,
+      segments: segs,
+    }
+  }, [products])
 
   const handleToggleCategory = (catName: string) => {
     setSelectedCategory((prev) => (prev === catName ? null : catName))
@@ -154,7 +120,7 @@ export function ProductDetailView() {
 
   const filteredProducts = useMemo(() => {
     const q = searchQuery.toLowerCase().trim()
-    return INCOMING_PRODUCTS.filter((prod) => {
+    return incomingProducts.filter((prod) => {
       const matchSearch =
         prod.namaProduk.toLowerCase().includes(q) ||
         prod.kategori.toLowerCase().includes(q)
@@ -162,7 +128,7 @@ export function ProductDetailView() {
         !effectiveFilterCategory || prod.kategori === effectiveFilterCategory
       return matchSearch && matchCategory
     })
-  }, [searchQuery, effectiveFilterCategory])
+  }, [incomingProducts, searchQuery, effectiveFilterCategory])
 
   return (
     <div className="flex flex-col gap-5 pb-6">
@@ -194,13 +160,13 @@ export function ProductDetailView() {
                 cx={CX}
                 cy={CY}
                 r={RADIUS}
-                stroke="#f4effe"
+                stroke="#ede7fa"
                 strokeWidth={STROKE_WIDTH}
                 fill="none"
               />
 
-              {/* Segments with Radial Pop-Out */}
-              {SEGMENTS.map((seg) => {
+              {/* Segments with Radial Pop-Out saat ada produk */}
+              {segments.map((seg) => {
                 const isSelected = activeCategory === seg.name
 
                 return (
@@ -230,41 +196,41 @@ export function ProductDetailView() {
               })}
             </g>
 
-            {/* Informative Center Label (Persis seperti di halaman awal dashboard) */}
-            {activeCategory && (
-              <g className="pointer-events-none select-none transition-all duration-300">
-                <text
-                  x={CX}
-                  y={CY - 6}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill="#111827"
-                  style={{ fontSize: '22px', fontWeight: 900 }}
-                >
-                  {CATEGORY_STATS.find((c) => c.name === activeCategory)?.count}
-                </text>
-                <text
-                  x={CX}
-                  y={CY + 12}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill="#63537e"
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  PRODUK
-                </text>
-              </g>
-            )}
+            {/* Informative Center Label */}
+            <g className="pointer-events-none select-none transition-all duration-300">
+              <text
+                x={CX}
+                y={CY - 6}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="#1e153b"
+                style={{ fontSize: '24px', fontWeight: 900 }}
+              >
+                {activeCategory
+                  ? categories.find((c) => c.name === activeCategory)?.count ?? 0
+                  : totalProducts}
+              </text>
+              <text
+                x={CX}
+                y={CY + 14}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="#7a6b99"
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                }}
+              >
+                PRODUK
+              </text>
+            </g>
           </svg>
         </div>
 
         {/* 3 Horizontal Strips on the Right */}
         <div className="w-full max-w-[500px] flex flex-col gap-3">
-          {CATEGORY_STATS.map((cat) => {
+          {categories.map((cat) => {
             const isSelected = activeCategory === cat.name
             const isFilterLocked = selectedCategory === cat.name
 
@@ -359,16 +325,20 @@ export function ProductDetailView() {
 
                     {/* FOTO */}
                     <td className="py-3.5 px-3 text-center">
-                      <div className="w-10 h-10 rounded-[15px] bg-purple-50/70 border border-purple-100/60 flex items-center justify-center text-lg shadow-2xs mx-auto">
-                        <span>{item.fotoIcon}</span>
-                      </div>
+                      {item.customImageUrl ? (
+                        <img
+                          src={item.customImageUrl}
+                          alt={item.namaProduk}
+                          className="w-8 h-8 rounded-lg object-cover mx-auto border border-purple-100"
+                        />
+                      ) : (
+                        <span className="text-base select-none">{item.fotoIcon}</span>
+                      )}
                     </td>
 
                     {/* NAMA PRODUK */}
-                    <td className="py-3.5 px-3">
-                      <p className="font-bold text-slate-800 leading-snug">
-                        {item.namaProduk}
-                      </p>
+                    <td className="py-3.5 px-3 font-bold text-slate-900">
+                      {item.namaProduk}
                     </td>
 
                     {/* KATEGORI */}
@@ -379,7 +349,7 @@ export function ProductDetailView() {
                             ? 'bg-[#f4effe] text-[#673ee8]'
                             : item.kategori === 'Perlengkapan Sekolah'
                             ? 'bg-[#f4effe] text-[#8e63f5]'
-                            : 'bg-[#f4effe] text-[#7a6b99]'
+                            : 'bg-[#f4effe] text-[#bca5fb]'
                         }`}
                       >
                         {item.kategori}
@@ -387,12 +357,12 @@ export function ProductDetailView() {
                     </td>
 
                     {/* JUMLAH MASUK */}
-                    <td className="py-3.5 px-3 text-center font-bold text-slate-800 whitespace-nowrap">
+                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 whitespace-nowrap">
                       {item.jumlahMasuk}
                     </td>
 
                     {/* HARGA BELI */}
-                    <td className="py-3.5 px-3 text-right text-slate-600 font-medium whitespace-nowrap">
+                    <td className="py-3.5 px-3 text-right text-slate-500 font-medium whitespace-nowrap">
                       {item.hargaBeli}
                     </td>
 
@@ -408,7 +378,9 @@ export function ProductDetailView() {
                     colSpan={8}
                     className="py-8 text-center text-slate-400 font-medium"
                   >
-                    Tidak ada produk yang cocok dengan pencarian "{searchQuery}"
+                    {searchQuery
+                      ? `Tidak ada produk yang cocok dengan pencarian "${searchQuery}"`
+                      : 'Belum ada riwayat produk baru masuk'}
                   </td>
                 </tr>
               )}

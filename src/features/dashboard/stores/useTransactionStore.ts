@@ -19,32 +19,11 @@ interface TransactionState {
   saveTransaction: (checkout: CheckoutFormValues, cashierName?: string) => CompletedTransaction
 }
 
-const INITIAL_CART: TransactionItem[] = [
-  {
-    id: 'cart-1',
-    productId: 'POS-010',
-    name: 'Lem Kertas Glukol Sedang',
-    unitPrice: 4500,
-    quantity: 2,
-    subtotal: 9000,
-    imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500&auto=format&fit=crop&q=80',
-    category: 'ATK',
-  },
-  {
-    id: 'cart-2',
-    productId: 'POS-011',
-    name: 'Lakban Hitam Daimaru',
-    unitPrice: 12500,
-    quantity: 1,
-    subtotal: 12500,
-    imageUrl: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=500&auto=format&fit=crop&q=80',
-    category: 'ATK',
-  },
-]
+const INITIAL_CART: TransactionItem[] = []
 
 export const useTransactionStore = create<TransactionState>((set) => ({
   cartItems: INITIAL_CART,
-  transactionCount: 8,
+  transactionCount: 0,
   completedTransactions: [],
 
   addItem: (product) => {

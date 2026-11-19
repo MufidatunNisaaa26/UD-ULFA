@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { api } from '../../../services/api'
 import { loginSchema, type LoginFormData } from '../schemas/loginSchema'
 import { registeredAccounts, type UserAccount } from '../data/registeredAccounts'
 
@@ -55,7 +56,7 @@ export function useLoginForm() {
     navigate('/forgot-password')
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrors({})
 
@@ -74,45 +75,63 @@ export function useLoginForm() {
 
     setIsSubmitting(true)
 
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      const res = await api.auth.login({
+        username: formData.username,
+        password: formData.password,
+      })
 
-      const matchedAccount = registeredAccounts.find(
-        (acc) =>
-          acc.username.trim().toLowerCase() === formData.username.trim().toLowerCase(),
-      )
-
-      if (!matchedAccount) {
-        setErrors({
-          username: 'Akun tidak terdaftar. Gunakan "kasir_siti" atau "UDULFA".',
-        })
-        showToast('❌ Akun tidak ditemukan. Gunakan kasir_siti atau UDULFA')
-        return
+      if (res.token) {
+        localStorage.setItem('udulfa_token', res.token)
       }
 
-      if (matchedAccount.password !== formData.password) {
-        setErrors({
-          password: 'Kata sandi tidak sesuai. Silakan periksa kembali.',
-        })
-        showToast('❌ Kata sandi tidak sesuai!')
-        return
+      const account: UserAccount = {
+        username: res.user.username,
+        displayName: res.user.nama || res.user.username,
+        password: '',
+        role: (res.user.role as any) || 'Owner',
       }
 
-      // Login berhasil
-      setCurrentUser(matchedAccount)
+      setCurrentUser(account)
       try {
         if (formData.rememberDevice) {
-          localStorage.setItem('udulfa_active_user', JSON.stringify(matchedAccount))
+          localStorage.setItem('udulfa_active_user', JSON.stringify(account))
         } else {
-          sessionStorage.setItem('udulfa_active_user', JSON.stringify(matchedAccount))
+          sessionStorage.setItem('udulfa_active_user', JSON.stringify(account))
         }
       } catch {
         // ignore storage error
       }
 
-      showToast(`✅ Login berhasil! Selamat datang, ${matchedAccount.displayName} (${matchedAccount.role}).`)
+      showToast(`✅ Login berhasil! Selamat datang, ${account.displayName}.`)
       navigate('/dashboard')
-    }, 600)
+    } catch (err: any) {
+      // Coba fallback akun lokal terdaftar
+      const matchedAccount = registeredAccounts.find(
+        (acc) =>
+          acc.username.trim().toLowerCase() === formData.username.trim().toLowerCase() &&
+          acc.password === formData.password
+      )
+
+      if (matchedAccount) {
+        setCurrentUser(matchedAccount)
+        try {
+          if (formData.rememberDevice) {
+            localStorage.setItem('udulfa_active_user', JSON.stringify(matchedAccount))
+          } else {
+            sessionStorage.setItem('udulfa_active_user', JSON.stringify(matchedAccount))
+          }
+        } catch {
+          // ignore
+        }
+        showToast(`✅ Login berhasil! Selamat datang, ${matchedAccount.displayName} (${matchedAccount.role}).`)
+        navigate('/dashboard')
+      } else {
+        setErrors({ general: err.message || 'Username atau password salah' })
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return {

@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { Search, ChevronDown, Check } from 'lucide-react'
+import { useProductStore } from '../stores/useProductStore'
 
 export interface StockItem {
   no: number
@@ -11,153 +12,6 @@ export interface StockItem {
   status: 'Stok Kritis' | 'Menipis' | 'Habis' | 'Tersedia'
 }
 
-const STOCK_ITEMS: StockItem[] = [
-  {
-    no: 1,
-    sku: 'PJ-001',
-    namaProduk: 'Kain Kafan Mori Super 12m',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '1 Roll',
-    sisaStokQty: 1,
-    status: 'Stok Kritis',
-  },
-  {
-    no: 2,
-    sku: 'ATK-014',
-    namaProduk: 'Buku Tulis SiDU 38 Lembar',
-    kategori: 'ATK',
-    sisaStok: '2 Pak',
-    sisaStokQty: 2,
-    status: 'Stok Kritis',
-  },
-  {
-    no: 3,
-    sku: 'PS-009',
-    namaProduk: 'Penggaris Besi 30cm',
-    kategori: 'Peralatan Sekolah',
-    sisaStok: '0 Pcs',
-    sisaStokQty: 0,
-    status: 'Habis',
-  },
-  {
-    no: 4,
-    sku: 'PJ-008',
-    namaProduk: 'Minyak Wangi Non Alkohol Kasturi 100ml',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '3 Btl',
-    sisaStokQty: 3,
-    status: 'Menipis',
-  },
-  {
-    no: 5,
-    sku: 'PJ-012',
-    namaProduk: 'Kapur Barus Jenazah 500gr',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '4 Pcs',
-    sisaStokQty: 4,
-    status: 'Menipis',
-  },
-  {
-    no: 6,
-    sku: 'ATK-022',
-    namaProduk: 'Pensil 2B Faber-Castell',
-    kategori: 'ATK',
-    sisaStok: '3 Lusin',
-    sisaStokQty: 3,
-    status: 'Menipis',
-  },
-  {
-    no: 7,
-    sku: 'PS-015',
-    namaProduk: 'Crayon Titi 12 Warna',
-    kategori: 'Peralatan Sekolah',
-    sisaStok: '2 Set',
-    sisaStokQty: 2,
-    status: 'Stok Kritis',
-  },
-  {
-    no: 8,
-    sku: 'PJ-019',
-    namaProduk: 'Sabun Mandi Jenazah Bidara',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '0 Pcs',
-    sisaStokQty: 0,
-    status: 'Habis',
-  },
-  {
-    no: 9,
-    sku: 'ATK-007',
-    namaProduk: 'Map Plastik L Transparan',
-    kategori: 'ATK',
-    sisaStok: '5 Pcs',
-    sisaStokQty: 5,
-    status: 'Menipis',
-  },
-  {
-    no: 10,
-    sku: 'PJ-025',
-    namaProduk: 'Tikar Pandan Jenazah 2m',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '0 Pcs',
-    sisaStokQty: 0,
-    status: 'Habis',
-  },
-  {
-    no: 11,
-    sku: 'ATK-002',
-    namaProduk: 'Spidol Snowman Boardmarker Hitam',
-    kategori: 'ATK',
-    sisaStok: '48 Pcs',
-    sisaStokQty: 48,
-    status: 'Tersedia',
-  },
-  {
-    no: 12,
-    sku: 'PJ-003',
-    namaProduk: 'Kain Kafan Mori Primissima 50m',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '15 Roll',
-    sisaStokQty: 15,
-    status: 'Tersedia',
-  },
-  {
-    no: 13,
-    sku: 'PS-004',
-    namaProduk: 'Buku Gambar A3 Kiky',
-    kategori: 'Peralatan Sekolah',
-    sisaStok: '35 Pcs',
-    sisaStokQty: 35,
-    status: 'Tersedia',
-  },
-  {
-    no: 14,
-    sku: 'ATK-018',
-    namaProduk: 'Penghapus Joyko Hitam',
-    kategori: 'ATK',
-    sisaStok: '65 Pcs',
-    sisaStokQty: 65,
-    status: 'Tersedia',
-  },
-  {
-    no: 15,
-    sku: 'PS-006',
-    namaProduk: 'Sampul Buku Coklat Folio',
-    kategori: 'Peralatan Sekolah',
-    sisaStok: '80 Pak',
-    sisaStokQty: 80,
-    status: 'Tersedia',
-  },
-  {
-    no: 16,
-    sku: 'PJ-014',
-    namaProduk: 'Minyak Wangi Melati Non Alkohol',
-    kategori: 'Peralatan Kematian',
-    sisaStok: '22 Btl',
-    sisaStokQty: 22,
-    status: 'Tersedia',
-  },
-]
-
 const CATEGORY_OPTIONS = [
   'Semua Kategori',
   'Peralatan Kematian',
@@ -166,11 +20,64 @@ const CATEGORY_OPTIONS = [
 ] as const
 
 export function StockHealthDetailView() {
+  const { products, fetchProducts } = useProductStore()
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua Kategori')
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string | null>(null)
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const stockItems = useMemo<StockItem[]>(() => {
+    return products.map((p, idx) => {
+      let status: 'Stok Kritis' | 'Menipis' | 'Habis' | 'Tersedia' = 'Tersedia'
+      if (p.stokJumlah === 0) {
+        status = 'Habis'
+      } else if (p.stokJumlah <= 3) {
+        status = 'Stok Kritis'
+      } else if (p.stokJumlah <= 10) {
+        status = 'Menipis'
+      }
+
+      const kategori = (
+        p.kategori === 'Perlengkapan Sekolah'
+          ? 'Peralatan Sekolah'
+          : p.kategori === 'Perlengkapan Jenazah'
+          ? 'Peralatan Kematian'
+          : 'ATK'
+      ) as 'Peralatan Kematian' | 'ATK' | 'Peralatan Sekolah'
+
+      return {
+        no: idx + 1,
+        sku: p.sku,
+        namaProduk: p.namaProduk,
+        kategori,
+        sisaStok: `${p.stokJumlah} ${p.stokSatuan}`,
+        sisaStokQty: p.stokJumlah,
+        status,
+      }
+    })
+  }, [products])
+
+  const countTersedia = useMemo(
+    () => stockItems.filter((i) => i.status === 'Tersedia').length,
+    [stockItems]
+  )
+  const countMenipis = useMemo(
+    () =>
+      stockItems.filter(
+        (i) => i.status === 'Menipis' || i.status === 'Stok Kritis'
+      ).length,
+    [stockItems]
+  )
+  const countHabis = useMemo(
+    () => stockItems.filter((i) => i.status === 'Habis').length,
+    [stockItems]
+  )
 
   // Tutup dropdown saat klik di luar
   useEffect(() => {
@@ -193,7 +100,7 @@ export function StockHealthDetailView() {
   // Filter daftar stok
   const filteredStock = useMemo(() => {
     const q = searchQuery.toLowerCase().trim()
-    return STOCK_ITEMS.filter((item) => {
+    return stockItems.filter((item) => {
       const matchSearch =
         item.namaProduk.toLowerCase().includes(q) ||
         item.sku.toLowerCase().includes(q)
@@ -208,7 +115,7 @@ export function StockHealthDetailView() {
 
       return matchSearch && matchCat && matchStatus
     })
-  }, [searchQuery, selectedCategory, selectedStatusFilter])
+  }, [stockItems, searchQuery, selectedCategory, selectedStatusFilter])
 
   return (
     <div className="flex flex-col gap-4 sm:gap-5 h-full min-h-0 select-none pb-1 overflow-hidden">
@@ -231,7 +138,7 @@ export function StockHealthDetailView() {
             Tersedia
           </p>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#059669] my-1 tracking-tight">
-            138
+            {countTersedia}
           </p>
           <p className="text-[11px] sm:text-xs font-semibold text-emerald-700">
             Produk
@@ -255,7 +162,7 @@ export function StockHealthDetailView() {
             Menipis
           </p>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#d97706] my-1 tracking-tight">
-            7
+            {countMenipis}
           </p>
           <p className="text-[11px] sm:text-xs font-semibold text-amber-700">
             Produk
@@ -279,7 +186,7 @@ export function StockHealthDetailView() {
             Habis
           </p>
           <p className="text-3xl sm:text-4xl font-extrabold text-[#e11d48] my-1 tracking-tight">
-            3
+            {countHabis}
           </p>
           <p className="text-[11px] sm:text-xs font-semibold text-rose-700">
             Produk

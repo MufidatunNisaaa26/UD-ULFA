@@ -1,11 +1,18 @@
 import { useState, useMemo, useEffect } from 'react'
-import { POS_PRODUCTS } from '../data/posProducts'
+import { api } from '../../../services/api'
+import { useProductStore } from '../stores/useProductStore'
 import { useTransactionStore, type CompletedTransaction } from '../stores/useTransactionStore'
 import { checkoutSchema } from '../schemas/transactionSchema'
 
 export type PosCategoryFilter = 'Semua' | 'ATK' | 'Perlengkapan Sekolah' | 'Perlengkapan Jenazah'
 
 export function useTransactionPos() {
+  const { products, fetchProducts } = useProductStore()
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
+
   const {
     cartItems,
     transactionCount,
@@ -63,9 +70,21 @@ export function useTransactionPos() {
   }, [datePrefix, transactionCount])
 
   // Filter Produk
+  const posProducts = useMemo(() => {
+    return products.map((product) => ({
+      id: product.id,
+      name: product.namaProduk,
+      category: product.kategori,
+      price: product.harga,
+      stock: product.stokJumlah,
+      unit: product.stokSatuan || 'Pcs',
+      imageUrl: product.customImageUrl || '',
+    }))
+  }, [products])
+
   const filteredProducts = useMemo(() => {
     const q = searchQuery.toLowerCase().trim()
-    return POS_PRODUCTS.filter((product) => {
+    return posProducts.filter((product) => {
       const matchSearch =
         product.name.toLowerCase().includes(q) ||
         product.category.toLowerCase().includes(q)
@@ -75,7 +94,7 @@ export function useTransactionPos() {
 
       return matchSearch && matchCategory
     })
-  }, [searchQuery, selectedCategory])
+  }, [posProducts, searchQuery, selectedCategory])
 
   // Hitungan Kasir
   const totalItems = useMemo(
@@ -123,7 +142,7 @@ export function useTransactionPos() {
   }
 
   // Handle Checkout / Simpan Transaksi dengan Zod Schema
-  const handleSaveTransaction = () => {
+  const handleSaveTransaction = async () => {
     const payload = {
       transactionNumber,
       items: cartItems,
@@ -144,6 +163,23 @@ export function useTransactionPos() {
     }
 
     setValidationError(null)
+
+    // Call API untuk mencatat transaksi dan memotong stok di MySQL backend
+    try {
+      await api.transaksi.create({
+        items: cartItems.map((item) => ({
+          produk_id: Number(item.productId),
+          jumlah: item.quantity,
+        })),
+        metode_pembayaran: 'Tunai',
+        no_transaksi: transactionNumber,
+      })
+      // Refresh produk agar stok terupdate realtime dari server
+      await fetchProducts()
+    } catch (err: any) {
+      console.warn('Gagal sinkron transaksi ke API server, transaksi tetap disimpan lokal:', err)
+    }
+
     const receipt = saveTransaction(result.data)
     setCompletedReceipt(receipt)
     setSuccessModalOpen(true)

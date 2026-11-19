@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useProductStore, type ProductItem } from '../stores/useProductStore'
 import { productSchema, type ProductCategory } from '../schemas/productSchema'
 
@@ -15,7 +15,19 @@ export function useProductList({
   isCreateMode,
   onToggleCreateMode,
 }: UseProductListProps = {}) {
-  const { products, addProduct, updateProduct, deleteProduct } = useProductStore()
+  const {
+    products,
+    isLoading,
+    error,
+    fetchProducts,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+  } = useProductStore()
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
   const [internalMode, setInternalMode] = useState<'list' | 'create' | 'edit'>('list')
   const [editingProduct, setEditingProduct] = useState<ProductItem | null>(null)
@@ -49,6 +61,7 @@ export function useProductList({
 
   // Upload Foto State
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null)
   const [previewType, setPreviewType] = useState<ProductItem['imageType'] | undefined>(undefined)
   const [isDragging, setIsDragging] = useState(false)
@@ -64,6 +77,7 @@ export function useProductList({
     setFormHarga('')
     setFormStok('')
     setFormErrors({})
+    setSelectedFile(null)
     setSelectedImagePreview(null)
     setPreviewType(undefined)
     if (fileInputRef.current) {
@@ -113,7 +127,7 @@ export function useProductList({
   }, [products, searchQuery, categoryFilter])
 
   // Submit Form dengan Validasi Zod Schema (SOP Compliance)
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const validationResult = productSchema.safeParse({
@@ -141,27 +155,34 @@ export function useProductList({
     const parsedUnit = validatedData.stok.replace(/^[\d\s.,]+/, '').trim() || 'Pcs'
 
     if (effectiveMode === 'edit' && editingProduct) {
-      updateProduct(editingProduct.id, {
-        namaProduk: validatedData.namaProduk,
-        kategori: validatedData.kategori,
-        harga: validatedData.harga,
-        stokJumlah: parsedNum,
-        stokSatuan: parsedUnit,
-        stokText: validatedData.stok,
-        customImageUrl: selectedImagePreview || undefined,
-        imageType: previewType || editingProduct.imageType,
-      })
+      await updateProduct(
+        editingProduct.id,
+        {
+          namaProduk: validatedData.namaProduk,
+          kategori: validatedData.kategori,
+          harga: validatedData.harga,
+          stokJumlah: parsedNum,
+          stokSatuan: parsedUnit,
+          stokText: validatedData.stok,
+          customImageUrl: selectedImagePreview || undefined,
+          imageType: previewType || editingProduct.imageType,
+        },
+        selectedFile
+      )
     } else {
-      addProduct({
-        namaProduk: validatedData.namaProduk,
-        kategori: validatedData.kategori,
-        harga: validatedData.harga,
-        stokJumlah: parsedNum,
-        stokSatuan: parsedUnit,
-        stokText: validatedData.stok,
-        imageType: previewType || 'buku-sidu',
-        customImageUrl: selectedImagePreview || undefined,
-      })
+      await addProduct(
+        {
+          namaProduk: validatedData.namaProduk,
+          kategori: validatedData.kategori,
+          harga: validatedData.harga,
+          stokJumlah: parsedNum,
+          stokSatuan: parsedUnit,
+          stokText: validatedData.stok,
+          imageType: previewType || 'buku-sidu',
+          customImageUrl: selectedImagePreview || undefined,
+        },
+        selectedFile
+      )
     }
 
     handleCancel()
@@ -173,9 +194,9 @@ export function useProductList({
     setProductToDelete(item)
   }
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!productToDelete) return
-    deleteProduct(productToDelete.id)
+    await deleteProduct(productToDelete.id)
     setProductToDelete(null)
   }
 
@@ -187,6 +208,7 @@ export function useProductList({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
+      setSelectedFile(file)
       setSelectedImagePreview(URL.createObjectURL(file))
       setPreviewType(undefined)
     }
@@ -197,6 +219,7 @@ export function useProductList({
     setIsDragging(false)
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0]
+      setSelectedFile(file)
       setSelectedImagePreview(URL.createObjectURL(file))
       setPreviewType(undefined)
     }
@@ -212,6 +235,7 @@ export function useProductList({
   }
 
   const removePhoto = () => {
+    setSelectedFile(null)
     setSelectedImagePreview(null)
     setPreviewType(undefined)
     if (fileInputRef.current) {
@@ -222,6 +246,8 @@ export function useProductList({
   return {
     effectiveMode,
     filteredProducts,
+    isLoading,
+    error,
     searchQuery,
     setSearchQuery,
     categoryFilter,

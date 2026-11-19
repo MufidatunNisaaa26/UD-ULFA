@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react'
 import { ReceiptText, ChevronRight } from 'lucide-react'
+import { api } from '../../../services/api'
 
 interface TransactionReceiptHistoryProps {
   onViewAll?: () => void
@@ -12,33 +14,36 @@ interface ReceiptItem {
   method: string
 }
 
-const RECEIPTS: ReceiptItem[] = [
-  {
-    id: '#TRX-20261108-0128',
-    itemsSummary: '3 Item • Buku Tulis & Pensil',
-    time: '17:42',
-    amount: 'Rp 85.000',
-    method: 'Tunai',
-  },
-  {
-    id: '#TRX-20261108-0127',
-    itemsSummary: '2 Item • Kain Kafan Mori',
-    time: '17:15',
-    amount: 'Rp 120.000',
-    method: 'Tunai',
-  },
-  {
-    id: '#TRX-20261108-0126',
-    itemsSummary: '1 Item • Penggaris & Sampul',
-    time: '16:50',
-    amount: 'Rp 42.500',
-    method: 'Tunai',
-  },
-]
-
 export function TransactionReceiptHistory({
   onViewAll,
 }: TransactionReceiptHistoryProps) {
+  const [receipts, setReceipts] = useState<ReceiptItem[]>([])
+
+  useEffect(() => {
+    api.transaksi
+      .getLaporan()
+      .then((data) => {
+        const mapped = data.slice(0, 5).map((r) => {
+          const d = new Date(r.tanggal)
+          const time = d.toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+          return {
+            id: r.no_transaksi,
+            itemsSummary: 'Transaksi Kasir POS',
+            time,
+            amount: `Rp ${Number(r.total_harga).toLocaleString('id-ID')}`,
+            method: r.metode_pembayaran || 'Tunai',
+          }
+        })
+        setReceipts(mapped)
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat riwayat transaksi:', err)
+      })
+  }, [])
+
   return (
     <div className="bg-white rounded-[15px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col justify-between h-full select-none">
       {/* Header */}
@@ -65,35 +70,41 @@ export function TransactionReceiptHistory({
 
         {/* Rows */}
         <div className="divide-y divide-slate-100/80">
-          {RECEIPTS.map((item) => (
-            <div
-              key={item.id}
-              className="grid grid-cols-12 items-center py-2.5 px-1 hover:bg-[#faf8fe] rounded-[15px] transition-colors"
-            >
-              <div className="col-span-5 pr-2">
-                <p className="text-xs font-bold text-slate-800 leading-tight">
-                  {item.id}
-                </p>
-                <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
-                  {item.itemsSummary}
-                </p>
-              </div>
-
-              <div className="col-span-2 text-center text-xs font-medium text-slate-500">
-                {item.time}
-              </div>
-
-              <div className="col-span-3 text-right text-xs font-bold text-slate-800">
-                {item.amount}
-              </div>
-
-              <div className="col-span-2 text-right">
-                <span className="inline-block px-2.5 py-0.5 rounded-[15px] bg-[#f4effe] text-[#673ee8] text-[10px] sm:text-[11px] font-semibold">
-                  {item.method}
-                </span>
-              </div>
+          {receipts.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-400 font-medium">
+              Belum ada riwayat transaksi
             </div>
-          ))}
+          ) : (
+            receipts.map((item) => (
+              <div
+                key={item.id}
+                className="grid grid-cols-12 items-center py-2.5 px-1 hover:bg-[#faf8fe] rounded-[15px] transition-colors"
+              >
+                <div className="col-span-5 pr-2">
+                  <p className="text-xs font-bold text-slate-800 leading-tight">
+                    {item.id}
+                  </p>
+                  <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
+                    {item.itemsSummary}
+                  </p>
+                </div>
+
+                <div className="col-span-2 text-center text-xs font-medium text-slate-500">
+                  {item.time}
+                </div>
+
+                <div className="col-span-3 text-right text-xs font-bold text-slate-800">
+                  {item.amount}
+                </div>
+
+                <div className="col-span-2 text-right">
+                  <span className="inline-block px-2.5 py-0.5 rounded-[15px] bg-[#f4effe] text-[#673ee8] text-[10px] sm:text-[11px] font-semibold">
+                    {item.method}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -113,4 +124,3 @@ export function TransactionReceiptHistory({
 }
 
 export default TransactionReceiptHistory
-
