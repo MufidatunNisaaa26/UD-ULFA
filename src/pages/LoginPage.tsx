@@ -33,16 +33,16 @@ export function LoginPage() {
         </div>
       )}
 
-      {/* Main Content Area - Grid Mentok ke Kiri & Bottom-Aligned untuk Ilustrasi */}
+      {/* Main Content Area - Di Mobile: Logo di atas, form login di tengah */}
       <div
-        className="w-full h-full flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-end justify-between z-10 pb-0"
+        className="w-full h-full flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-10 xl:gap-14 justify-between lg:items-end z-10 pb-4 lg:pb-0"
         style={{ paddingBottom: 0, marginBottom: 0 }}
       >
-        {/* Left Column: Brand Logo + Greeting & Illustration (55% -> col-span-7) */}
+        {/* Left Column: Brand Logo (Gambar disembunyikan di Mobile) */}
         <GreetingPanel />
 
-        {/* Right Column: Login Card - Vertically Centered & Slightly Centered in Right Area */}
-        <div className="lg:col-span-5 flex justify-center items-center self-center shrink-0 lg:-translate-x-8">
+        {/* Right Column: Login Card - Vertically Centered */}
+        <div className="lg:col-span-5 flex justify-center items-center my-auto lg:my-0 lg:self-center shrink-0 lg:-translate-x-8 w-full">
           <LoginForm
             formData={formData}
             errors={errors}

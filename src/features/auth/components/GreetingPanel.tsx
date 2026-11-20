@@ -4,13 +4,12 @@ import heroIllustration from '../../../assets/login-hero-transparent.png'
 export function GreetingPanel() {
   return (
     <div
-      className="lg:col-span-7 flex flex-col justify-between items-start text-left h-full min-h-0 self-stretch pl-0 ml-0 relative"
+      className="lg:col-span-7 flex flex-col justify-between items-start text-left h-auto lg:h-full min-h-0 self-stretch pl-0 ml-0 relative shrink-0"
       style={{ paddingBottom: 0, marginBottom: 0 }}
     >
-      {/* Brand Header */}
+      {/* Brand Header: Logo dan Nama UD ULFA di Pojok Kiri Atas */}
       <div className="w-full text-left shrink-0 pl-0 ml-0">
-        {/* Brand Logo UD ULFA (Lebih Besar & Menonjol) */}
-        <div className="flex items-center gap-2.5 sm:gap-3 select-none mb-3.5 sm:mb-4 lg:mb-5 text-left">
+        <div className="flex items-center gap-2.5 sm:gap-3 select-none mb-1 sm:mb-2 lg:mb-5 text-left">
           <div className="w-10 h-10 rounded-xl bg-[#6534d9] text-white flex items-center justify-center shadow-lg shadow-purple-600/30 shrink-0">
             <Store className="w-5 h-5" />
           </div>
@@ -23,12 +22,11 @@ export function GreetingPanel() {
             </p>
           </div>
         </div>
-
       </div>
 
-      {/* Illustration centered in the remaining left-panel space */}
+      {/* Gambar Ilustrasi: Disembunyikan di Mobile (< lg), Hanya Muncul di Tampilan Desktop (lg+) */}
       <div
-        className="w-full flex-1 min-h-0 flex items-center justify-center mt-auto overflow-visible relative bottom-0"
+        className="hidden lg:flex w-full flex-1 min-h-0 items-center justify-center mt-auto overflow-visible relative bottom-0"
         style={{
           paddingBottom: 0,
           marginBottom: 0,
