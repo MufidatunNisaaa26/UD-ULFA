@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Search } from 'lucide-react'
+import { Search, Package } from 'lucide-react'
 import { useProductStore } from '../stores/useProductStore'
 
 interface IncomingProduct {
@@ -131,11 +131,11 @@ export function ProductDetailView() {
   }, [incomingProducts, searchQuery, effectiveFilterCategory])
 
   return (
-    <div className="flex flex-col gap-5 pb-6">
+    <div className="flex flex-col gap-4 sm:gap-5 pb-6">
       {/* 1. KARTU ATAS: Donut Chart & 3 Strip Kategori */}
-      <div className="bg-white rounded-[15px] p-6 lg:p-7 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col md:flex-row items-center justify-around gap-6 lg:gap-12">
+      <div className="bg-white rounded-[15px] p-4 sm:p-6 lg:p-7 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col md:flex-row items-center justify-around gap-4 sm:gap-6 lg:gap-10">
         {/* Donut Chart */}
-        <div className="relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center shrink-0">
+        <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 flex items-center justify-center shrink-0">
           <svg
             width="100%"
             height="100%"
@@ -229,7 +229,7 @@ export function ProductDetailView() {
         </div>
 
         {/* 3 Horizontal Strips on the Right */}
-        <div className="w-full max-w-[500px] flex flex-col gap-3">
+        <div className="w-full max-w-[500px] flex flex-col gap-2.5 sm:gap-3">
           {categories.map((cat) => {
             const isSelected = activeCategory === cat.name
             const isFilterLocked = selectedCategory === cat.name
@@ -241,7 +241,7 @@ export function ProductDetailView() {
                 onMouseEnter={() => setHoveredCategory(cat.name)}
                 onMouseLeave={() => setHoveredCategory(null)}
                 onClick={() => handleToggleCategory(cat.name)}
-                className={`w-full flex items-center justify-between px-5 py-3.5 rounded-[15px] transition-all cursor-pointer text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-[12px] sm:rounded-[15px] transition-all cursor-pointer text-left ${
                   isSelected
                     ? 'bg-[#f0e9fd] ring-1.5 ring-purple-300 shadow-sm scale-[1.01]'
                     : 'bg-[#f8f5fe] hover:bg-[#f1ecfc]'
@@ -252,9 +252,9 @@ export function ProductDetailView() {
                     : `Klik untuk memfilter kategori ${cat.name}`
                 }
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
                   <span
-                    className="w-3 h-3 rounded-full shrink-0 shadow-xs"
+                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 shadow-xs"
                     style={{ backgroundColor: cat.color }}
                   />
                   <span className="text-xs sm:text-sm font-semibold text-slate-800">
@@ -271,12 +271,19 @@ export function ProductDetailView() {
       </div>
 
       {/* 2. KARTU BAWAH: Riwayat Produk Baru Masuk */}
-      <div className="bg-white rounded-[15px] p-6 lg:p-7 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col">
+      <div className="bg-white rounded-[15px] p-4 sm:p-6 lg:p-7 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col overflow-hidden">
         {/* Header Kartu: Judul di Kiri & Search Bar di Kanan */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 mb-5">
-          <h3 className="text-base sm:text-lg font-bold text-[#1e153b] tracking-tight">
-            Riwayat Produk Baru Masuk
-          </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-5">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-[#1e153b] tracking-tight">
+              Riwayat Produk Baru Masuk
+            </h3>
+            {filteredProducts.length > 0 && (
+              <span className="sm:hidden text-[10px] font-semibold text-[#673ee8] bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">
+                Geser &rarr;
+              </span>
+            )}
+          </div>
 
           {/* Search Bar */}
           <div className="relative w-full sm:w-72">
@@ -291,40 +298,40 @@ export function ProductDetailView() {
           </div>
         </div>
 
-        {/* Tabel Produk Baru Masuk */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3.5 px-3 text-center w-12 rounded-l-[15px]">NO</th>
-                <th className="py-3.5 px-3">WAKTU INPUT</th>
-                <th className="py-3.5 px-3 text-center w-16">FOTO</th>
-                <th className="py-3.5 px-3">NAMA PRODUK</th>
-                <th className="py-3.5 px-3 text-center">KATEGORI</th>
-                <th className="py-3.5 px-3 text-center">JUMLAH MASUK</th>
-                <th className="py-3.5 px-3 text-right">HARGA BELI</th>
-                <th className="py-3.5 px-3 text-right rounded-r-[15px]">HARGA JUAL</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100/80">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((item) => (
+        {/* Tabel Produk Baru Masuk / State Kosong Responsif */}
+        {filteredProducts.length > 0 ? (
+          <div className="overflow-x-auto w-full -mx-1 px-1">
+            <table className="w-full min-w-[680px] text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+                  <th className="py-3 px-2.5 text-center w-12 rounded-l-[12px]">NO</th>
+                  <th className="py-3 px-3 w-28 whitespace-nowrap">WAKTU INPUT</th>
+                  <th className="py-3 px-2.5 text-center w-14">FOTO</th>
+                  <th className="py-3 px-3 min-w-[130px]">NAMA PRODUK</th>
+                  <th className="py-3 px-3 text-center w-32 whitespace-nowrap">KATEGORI</th>
+                  <th className="py-3 px-3 text-center w-28 whitespace-nowrap">JUMLAH MASUK</th>
+                  <th className="py-3 px-3 text-right w-28 whitespace-nowrap">HARGA BELI</th>
+                  <th className="py-3 px-3 text-right w-28 rounded-r-[12px] whitespace-nowrap">HARGA JUAL</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100/80">
+                {filteredProducts.map((item) => (
                   <tr
                     key={item.no}
                     className="hover:bg-[#faf8fe] transition-colors"
                   >
                     {/* NO */}
-                    <td className="py-3.5 px-3 text-center text-slate-500 font-medium">
+                    <td className="py-3 px-2.5 text-center text-slate-500 font-medium">
                       {item.no}
                     </td>
 
                     {/* WAKTU INPUT */}
-                    <td className="py-3.5 px-3 text-slate-500 font-medium whitespace-nowrap">
+                    <td className="py-3 px-3 text-slate-500 font-medium whitespace-nowrap">
                       {item.waktuInput}
                     </td>
 
                     {/* FOTO */}
-                    <td className="py-3.5 px-3 text-center">
+                    <td className="py-3 px-2.5 text-center">
                       {item.customImageUrl ? (
                         <img
                           src={item.customImageUrl}
@@ -337,14 +344,14 @@ export function ProductDetailView() {
                     </td>
 
                     {/* NAMA PRODUK */}
-                    <td className="py-3.5 px-3 font-bold text-slate-900">
+                    <td className="py-3 px-3 font-bold text-slate-900 min-w-[130px]">
                       {item.namaProduk}
                     </td>
 
                     {/* KATEGORI */}
-                    <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                    <td className="py-3 px-3 text-center whitespace-nowrap">
                       <span
-                        className={`inline-block px-3 py-1 rounded-[15px] text-[11px] font-semibold ${
+                        className={`inline-block px-2.5 py-0.5 rounded-[12px] text-[10px] sm:text-[11px] font-semibold ${
                           item.kategori === 'ATK'
                             ? 'bg-[#f4effe] text-[#673ee8]'
                             : item.kategori === 'Perlengkapan Sekolah'
@@ -357,36 +364,41 @@ export function ProductDetailView() {
                     </td>
 
                     {/* JUMLAH MASUK */}
-                    <td className="py-3.5 px-3 text-center font-bold text-emerald-600 whitespace-nowrap">
+                    <td className="py-3 px-3 text-center font-bold text-emerald-600 whitespace-nowrap">
                       {item.jumlahMasuk}
                     </td>
 
                     {/* HARGA BELI */}
-                    <td className="py-3.5 px-3 text-right text-slate-500 font-medium whitespace-nowrap">
+                    <td className="py-3 px-3 text-right text-slate-500 font-medium whitespace-nowrap">
                       {item.hargaBeli}
                     </td>
 
                     {/* HARGA JUAL */}
-                    <td className="py-3.5 px-3 text-right font-bold text-slate-900 whitespace-nowrap">
+                    <td className="py-3 px-3 text-right font-bold text-slate-900 whitespace-nowrap">
                       {item.hargaJual}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className="py-8 text-center text-slate-400 font-medium"
-                  >
-                    {searchQuery
-                      ? `Tidak ada produk yang cocok dengan pencarian "${searchQuery}"`
-                      : 'Belum ada riwayat produk baru masuk'}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="py-10 px-4 rounded-[12px] bg-[#faf8fe] border border-purple-100/60 flex flex-col items-center justify-center text-center my-1">
+            <div className="w-10 h-10 rounded-[12px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-2">
+              <Package className="w-5 h-5 stroke-[1.8]" />
+            </div>
+            <p className="text-xs sm:text-sm font-semibold text-slate-700">
+              {searchQuery
+                ? `Tidak ada produk yang cocok dengan pencarian "${searchQuery}"`
+                : 'Belum ada riwayat produk baru masuk'}
+            </p>
+            <p className="text-[11px] text-slate-400 mt-0.5 max-w-xs">
+              {searchQuery
+                ? 'Coba gunakan kata kunci pencarian yang lain'
+                : 'Produk yang ditambahkan akan otomatis tercatat di tabel ini'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
