@@ -85,9 +85,11 @@ export function LoginForm({
                 value={formData.password}
                 onChange={onInputChange}
                 placeholder="Masukkan kata sandi"
-                className={`w-full h-10 pl-11 pr-11 text-sm rounded-[10px] border transition-all outline-none bg-white placeholder:text-slate-400 tracking-wider ${
+                className={`w-full h-10 pl-11 pr-11 text-sm rounded-[10px] border transition-all outline-none bg-white placeholder:text-slate-400 ${
+                  showPassword ? 'tracking-normal' : 'tracking-wider'
+                } ${
                   errors.password
-                    ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 text-red-900 tracking-normal'
+                    ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 text-red-900'
                     : 'border-slate-200 focus:border-[#6534d9] focus:ring-2 focus:ring-purple-100 text-slate-800'
                 }`}
               />
@@ -95,12 +97,12 @@ export function LoginForm({
                 type="button"
                 onClick={onToggleShowPassword}
                 aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                className="absolute inset-y-0 right-0 w-11 flex items-center justify-center text-slate-400 hover:text-[#6534d9] transition-colors cursor-pointer z-10"
               >
                 {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
+                  <Eye className="w-5 h-5 text-[#6534d9]" />
                 ) : (
-                  <Eye className="w-5 h-5" />
+                  <EyeOff className="w-5 h-5 text-slate-400 hover:text-slate-600" />
                 )}
               </button>
             </div>

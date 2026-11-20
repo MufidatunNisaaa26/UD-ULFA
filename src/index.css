@@ -35,6 +35,12 @@ input[type="number"] {
   appearance: textfield;
 }
 
+/* Hide Edge & Chrome native password reveal button to avoid duplicate/blocking eye icons */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
 /* Print thermal receipt 80mm */
 @media print {
   body * {

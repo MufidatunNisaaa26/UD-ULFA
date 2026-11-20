@@ -25,7 +25,7 @@ export function useTransactionPos() {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<PosCategoryFilter>('Semua')
-  const [cashInput, setCashInput] = useState('50.000')
+  const [cashInput, setCashInput] = useState('')
   const [validationError, setValidationError] = useState<string | null>(null)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [completedReceipt, setCompletedReceipt] = useState<CompletedTransaction | null>(null)
@@ -115,7 +115,7 @@ export function useTransactionPos() {
     return raw === '' ? 0 : Number(raw)
   }, [cashInput])
 
-  const kembalian = cashReceived - totalBayar
+  const kembalian = cashInput.trim() === '' ? 0 : cashReceived - totalBayar
 
   // Input Uang Diterima
   const handleCashChange = (value: string) => {
@@ -131,7 +131,7 @@ export function useTransactionPos() {
 
   // Set Uang Pas
   const setExactCash = () => {
-    setCashInput(totalBayar > 0 ? totalBayar.toLocaleString('id-ID') : '0')
+    setCashInput(totalBayar > 0 ? totalBayar.toLocaleString('id-ID') : '')
     setValidationError(null)
   }
 
@@ -184,13 +184,13 @@ export function useTransactionPos() {
     const receipt = saveTransaction(result.data)
     setCompletedReceipt(receipt)
     setSuccessModalOpen(true)
-    setCashInput('0')
+    setCashInput('')
   }
 
   // Batal Transaksi (Reset keranjang & input)
   const handleCancelTransaction = () => {
     clearCart()
-    setCashInput('0')
+    setCashInput('')
     setValidationError(null)
   }
 

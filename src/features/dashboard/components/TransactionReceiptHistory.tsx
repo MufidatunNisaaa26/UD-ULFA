@@ -108,15 +108,15 @@ export function TransactionReceiptHistory({
         </div>
       </div>
 
-      {/* Footer Link */}
-      <div className="flex justify-end pt-2">
+      {/* Footer Link: Background Putih Responsif */}
+      <div className="flex items-center justify-end pt-2 shrink-0">
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs font-semibold text-[#673ee8] hover:text-[#5229c9] flex items-center gap-0.5 cursor-pointer transition-colors"
+          className="bg-white hover:bg-purple-50/80 border border-purple-200/90 hover:border-[#673ee8] text-xs font-bold text-[#673ee8] hover:text-[#5229c9] px-3.5 py-1.5 rounded-full shadow-xs flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
         >
           <span>Lihat Semua Struk</span>
-          <ChevronRight className="w-3.5 h-3.5" />
+          <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
         </button>
       </div>
     </div>

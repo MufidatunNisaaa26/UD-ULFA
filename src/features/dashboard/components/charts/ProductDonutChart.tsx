@@ -205,7 +205,7 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
         </div>
 
         {/* Legend 3 Kategori */}
-        <div className="flex flex-col gap-2.5 w-full sm:w-auto min-w-[215px]">
+        <div className="flex flex-col gap-2 w-full sm:w-auto min-w-0 sm:min-w-[190px]">
           {categories.map((cat) => {
             const isSelected = activeCategory?.name === cat.name
 
@@ -216,23 +216,23 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
                 onMouseEnter={() => setActiveCategory(cat)}
                 onMouseLeave={() => setActiveCategory(null)}
                 onClick={() => handleToggleCategory(cat)}
-                className={`flex items-center justify-between gap-4 text-xs px-3 py-2 rounded-[15px] cursor-pointer transition-all text-left ${
+                className={`flex items-center justify-between gap-3 text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-[12px] cursor-pointer transition-all text-left ${
                   isSelected
-                    ? 'bg-[#f4effe] ring-1 ring-purple-300/80 shadow-xs scale-[1.02]'
+                    ? 'bg-[#f4effe] ring-1 ring-purple-300/80 shadow-xs scale-[1.01]'
                     : 'hover:bg-slate-50'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2 min-w-0">
                   <span
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: cat.color }}
                   />
-                  <span className="font-semibold text-slate-700">
+                  <span className="font-semibold text-slate-700 truncate">
                     {cat.name}
                   </span>
                 </div>
-                <span className="font-semibold text-slate-800 text-right">
-                  {cat.count} Produk{' '}
+                <span className="font-semibold text-slate-800 text-right shrink-0 pl-1">
+                  {cat.count} <span className="hidden sm:inline">Produk</span>{' '}
                   <span className="text-slate-400 font-normal">
                     ({cat.percent}%)
                   </span>
@@ -243,15 +243,15 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
         </div>
       </div>
 
-      {/* Footer Link */}
-      <div className="flex justify-end pt-3">
+      {/* Footer Link: Teks Lihat Semua di background putih responsif */}
+      <div className="flex items-center justify-end pt-2 sm:pt-2.5 shrink-0">
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs font-semibold text-[#673ee8] hover:text-[#5229c9] flex items-center gap-0.5 cursor-pointer transition-colors"
+          className="bg-white hover:bg-purple-50/80 border border-purple-200/90 hover:border-[#673ee8] text-xs font-bold text-[#673ee8] hover:text-[#5229c9] px-3.5 py-1.5 rounded-full shadow-xs flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
         >
           <span>Lihat Semua</span>
-          <ChevronRight className="w-3.5 h-3.5" />
+          <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
         </button>
       </div>
     </div>
