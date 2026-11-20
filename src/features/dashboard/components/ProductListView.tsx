@@ -301,14 +301,14 @@ export function ProductListView(props: ProductListViewProps = {}) {
     const hasPhoto = Boolean(selectedImagePreview || previewType)
 
     return (
-      <div className="w-full h-full min-h-0 bg-white rounded-[15px] p-4 sm:p-5 lg:p-6 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 select-none flex flex-col justify-between overflow-y-auto">
+      <div className="w-full bg-white rounded-[15px] p-4 sm:p-6 lg:p-7 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 select-none flex flex-col justify-between overflow-y-auto">
         <form onSubmit={handleFormSubmit} className="flex-1 flex flex-col justify-between min-h-0">
-          <div className="flex flex-col gap-3.5 sm:gap-4 lg:gap-5 min-h-0">
+          <div className="flex flex-col gap-4 sm:gap-5 min-h-0">
             {/* Baris 1: Nama Produk & Kategori */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
               {/* Nama Produk */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
                   Nama Produk
                 </label>
                 <input
@@ -316,14 +316,14 @@ export function ProductListView(props: ProductListViewProps = {}) {
                   placeholder="Masukan nama produk"
                   value={formNama}
                   onChange={(e) => setFormNama(e.target.value)}
-                  className={`w-full text-xs sm:text-sm px-3.5 py-2.5 sm:py-3 rounded-[12px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
+                  className={`w-full text-sm sm:text-base px-4 py-3 sm:py-3.5 rounded-[15px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
                     formErrors.namaProduk
                       ? 'border-rose-400 focus:border-rose-500'
                       : 'border-purple-100/60 focus:border-[#673ee8]'
                   }`}
                 />
                 {formErrors.namaProduk && (
-                  <p className="text-rose-600 text-xs mt-1 font-medium">
+                  <p className="text-rose-600 text-xs mt-1.5 font-medium">
                     {formErrors.namaProduk}
                   </p>
                 )}
@@ -331,14 +331,14 @@ export function ProductListView(props: ProductListViewProps = {}) {
 
               {/* Kategori */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
                   Kategori
                 </label>
                 <div className="relative">
                   <select
                     value={formKategori}
                     onChange={(e) => setFormKategori(e.target.value)}
-                    className={`w-full text-xs sm:text-sm px-3.5 py-2.5 sm:py-3 rounded-[12px] bg-[#f8f7fd] border focus:bg-white outline-none transition-all appearance-none cursor-pointer pr-10 ${
+                    className={`w-full text-sm sm:text-base px-4 py-3 sm:py-3.5 rounded-[15px] bg-[#f8f7fd] border focus:bg-white outline-none transition-all appearance-none cursor-pointer pr-10 ${
                       formErrors.kategori
                         ? 'border-rose-400 focus:border-rose-500'
                         : 'border-purple-100/60 focus:border-[#673ee8]'
@@ -349,12 +349,12 @@ export function ProductListView(props: ProductListViewProps = {}) {
                     <option value="Perlengkapan Sekolah" className="text-slate-800">Perlengkapan Sekolah</option>
                     <option value="Perlengkapan Jenazah" className="text-slate-800">Perlengkapan Jenazah</option>
                   </select>
-                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                    <ChevronDown className="w-4 h-4" />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <ChevronDown className="w-5 h-5" />
                   </div>
                 </div>
                 {formErrors.kategori && (
-                  <p className="text-rose-600 text-xs mt-1 font-medium">
+                  <p className="text-rose-600 text-xs mt-1.5 font-medium">
                     {formErrors.kategori}
                   </p>
                 )}
@@ -362,14 +362,14 @@ export function ProductListView(props: ProductListViewProps = {}) {
             </div>
 
             {/* Baris 2: Harga Modal, Harga Jual, & Stok */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5">
               {/* Harga Modal (Beli) */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
                   Harga Modal (Beli)
                 </label>
                 <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-slate-400 font-medium pointer-events-none">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm sm:text-base text-slate-400 font-medium pointer-events-none">
                     Rp
                   </div>
                   <input
@@ -381,7 +381,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       const raw = e.target.value.replace(/\D/g, '')
                       setFormHargaBeli(raw === '' ? '' : Number(raw))
                     }}
-                    className={`w-full text-xs sm:text-sm pl-10 pr-3.5 py-2.5 sm:py-3 rounded-[12px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
+                    className={`w-full text-sm sm:text-base pl-12 pr-4 py-3 sm:py-3.5 rounded-[15px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
                       formErrors.hargaBeli
                         ? 'border-rose-400 focus:border-rose-500'
                         : 'border-purple-100/60 focus:border-[#673ee8]'
@@ -389,7 +389,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
                   />
                 </div>
                 {formErrors.hargaBeli && (
-                  <p className="text-rose-600 text-xs mt-1 font-medium">
+                  <p className="text-rose-600 text-xs mt-1.5 font-medium">
                     {formErrors.hargaBeli}
                   </p>
                 )}
@@ -397,11 +397,11 @@ export function ProductListView(props: ProductListViewProps = {}) {
 
               {/* Harga Jual */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
                   Harga Jual
                 </label>
                 <div className="relative">
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-slate-400 font-medium pointer-events-none">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm sm:text-base text-slate-400 font-medium pointer-events-none">
                     Rp
                   </div>
                   <input
@@ -413,7 +413,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       const raw = e.target.value.replace(/\D/g, '')
                       setFormHarga(raw === '' ? '' : Number(raw))
                     }}
-                    className={`w-full text-xs sm:text-sm pl-10 pr-3.5 py-2.5 sm:py-3 rounded-[12px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
+                    className={`w-full text-sm sm:text-base pl-12 pr-4 py-3 sm:py-3.5 rounded-[15px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
                       formErrors.harga
                         ? 'border-rose-400 focus:border-rose-500'
                         : 'border-purple-100/60 focus:border-[#673ee8]'
@@ -421,7 +421,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
                   />
                 </div>
                 {formErrors.harga && (
-                  <p className="text-rose-600 text-xs mt-1 font-medium">
+                  <p className="text-rose-600 text-xs mt-1.5 font-medium">
                     {formErrors.harga}
                   </p>
                 )}
@@ -429,7 +429,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
 
               {/* Stok */}
               <div>
-                <label className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
                   Stok
                 </label>
                 <input
@@ -437,14 +437,14 @@ export function ProductListView(props: ProductListViewProps = {}) {
                   placeholder="jumlah stok: 1pak"
                   value={formStok}
                   onChange={(e) => setFormStok(e.target.value)}
-                  className={`w-full text-xs sm:text-sm px-3.5 py-2.5 sm:py-3 rounded-[12px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
+                  className={`w-full text-sm sm:text-base px-4 py-3 sm:py-3.5 rounded-[15px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
                     formErrors.stok
                       ? 'border-rose-400 focus:border-rose-500'
                       : 'border-purple-100/60 focus:border-[#673ee8]'
                   }`}
                 />
                 {formErrors.stok && (
-                  <p className="text-rose-600 text-xs mt-1 font-medium">
+                  <p className="text-rose-600 text-xs mt-1.5 font-medium">
                     {formErrors.stok}
                   </p>
                 )}
@@ -453,7 +453,7 @@ export function ProductListView(props: ProductListViewProps = {}) {
 
             {/* Baris 3: Foto Produk */}
             <div>
-              <label className="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+              <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
                 Foto Produk
               </label>
 
@@ -466,9 +466,9 @@ export function ProductListView(props: ProductListViewProps = {}) {
               />
 
               {hasPhoto ? (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="inline-flex items-center gap-3 p-2.5 rounded-[15px] border-2 border-purple-200/80 bg-[#faf8fe] shadow-2xs shrink-0">
-                    <div className="relative w-28 h-28 sm:w-32 sm:h-32 aspect-square rounded-[12px] overflow-hidden border border-purple-200/70 bg-[#faf8fe] shadow-xs group flex items-center justify-center shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                  <div className="inline-flex flex-col items-start gap-2.5 p-3 rounded-[15px] border-2 border-purple-200/80 bg-[#faf8fe] shadow-2xs shrink-0">
+                    <div className="relative w-40 h-40 sm:w-48 sm:h-48 aspect-square rounded-[12px] overflow-hidden border border-purple-200/70 bg-[#faf8fe] shadow-xs group flex items-center justify-center">
                       {selectedImagePreview ? (
                         <img
                           src={selectedImagePreview}
@@ -478,76 +478,93 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       ) : (
                         <ProductThumbnailLarge type={previewType} />
                       )}
-                      <div className="absolute top-2 right-2 bg-emerald-500 text-white rounded-full p-1 shadow-xs">
-                        <Check className="w-3.5 h-3.5" />
+                      <div className="absolute top-2.5 right-2.5 bg-emerald-500 text-white rounded-full p-1.5 shadow-xs">
+                        <Check className="w-4 h-4" />
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between w-full gap-2">
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-[10px] bg-white hover:bg-purple-50 text-[#673ee8] text-xs font-semibold border border-purple-200 transition-all cursor-pointer shadow-2xs"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-[12px] bg-white hover:bg-purple-50 text-[#673ee8] text-xs sm:text-sm font-semibold border border-purple-200 transition-all cursor-pointer shadow-2xs"
                       >
-                        <Camera className="w-3.5 h-3.5" />
+                        <Camera className="w-4 h-4" />
                         <span>Ganti Foto</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={removePhoto}
-                        className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-[10px] bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold border border-rose-200/60 transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-[12px] bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs sm:text-sm font-semibold border border-rose-200/60 transition-all cursor-pointer"
                         title="Hapus Foto"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                         <span>Hapus</span>
                       </button>
                     </div>
                   </div>
+
+                  <div className="flex flex-wrap sm:flex-nowrap items-center justify-end gap-3 shrink-0 self-end sm:self-auto w-full sm:w-auto mt-2 sm:mt-0 pb-1">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-6 py-3 rounded-[15px] text-sm sm:text-base font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-2xs transition-all cursor-pointer"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-7 py-3 rounded-[15px] bg-[#673ee8] hover:bg-[#582bc4] text-white text-sm sm:text-base font-semibold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+                    >
+                      {effectiveMode === 'edit' ? 'Simpan Perubahan' : 'Simpan Produk'}
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  className={`w-full border-2 border-dashed rounded-[15px] p-5 sm:p-7 text-center cursor-pointer transition-all ${
-                    isDragging
-                      ? 'border-[#673ee8] bg-purple-50/70'
-                      : 'border-purple-200/80 bg-[#faf8fe] hover:bg-purple-50/40'
-                  }`}
-                >
-                  <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-[12px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-2 shadow-2xs">
-                      <Camera className="w-5 h-5" />
+                <div className="flex flex-col gap-4">
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`w-full border-2 border-dashed rounded-[15px] p-8 sm:p-10 text-center cursor-pointer transition-all ${
+                      isDragging
+                        ? 'border-[#673ee8] bg-purple-50/70'
+                        : 'border-purple-200/80 bg-[#faf8fe] hover:bg-purple-50/40'
+                    }`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className="w-12 h-12 rounded-[14px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-3 shadow-2xs">
+                        <Camera className="w-6 h-6" />
+                      </div>
+                      <p className="text-sm sm:text-base text-slate-700 font-semibold">
+                        Seret foto ke sini atau unggah
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                        PNG, JPG, atau WEBP (Maks. 2MB)
+                      </p>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-700 font-semibold">
-                      Seret foto ke sini atau klik untuk unggah
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      PNG, JPG, atau WEBP (Maks. 2MB)
-                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-2 pb-1">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-6 py-3 rounded-[15px] text-sm sm:text-base font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-2xs transition-all cursor-pointer"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-7 py-3 rounded-[15px] bg-[#673ee8] hover:bg-[#582bc4] text-white text-sm sm:text-base font-semibold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+                    >
+                      {effectiveMode === 'edit' ? 'Simpan Perubahan' : 'Simpan Produk'}
+                    </button>
                   </div>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Baris Bawah: Tombol Aksi Batal & Simpan Produk (Selalu Terlihat & Rapi) */}
-          <div className="flex items-center justify-end gap-3 pt-3 sm:pt-4 border-t border-purple-100/60 mt-3 sm:mt-4 shrink-0">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-5 sm:px-6 py-2.5 rounded-[12px] text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-2xs transition-all cursor-pointer"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="px-6 sm:px-7 py-2.5 rounded-[12px] bg-[#673ee8] hover:bg-[#582bc4] text-white text-xs sm:text-sm font-semibold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
-            >
-              {effectiveMode === 'edit' ? 'Simpan Perubahan' : 'Simpan Produk'}
-            </button>
           </div>
         </form>
       </div>
