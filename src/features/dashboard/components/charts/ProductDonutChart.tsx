@@ -109,10 +109,10 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
         </span>
       </div>
 
-      {/* Donut Chart & Legend Visual Selalu Ditampilkan */}
-      <div className="flex-1 flex flex-col sm:flex-row items-center justify-around gap-3 sm:gap-6 my-auto min-h-0">
-        {/* Donut Ring */}
-        <div className="relative w-32 h-32 sm:w-36 sm:h-36 xl:w-40 xl:h-40 flex items-center justify-center shrink-0">
+      {/* Donut Chart (Kiri) & Legend Kategori (Kanan) - Selalu Samping Kiri Kanan (flex-row) */}
+      <div className="flex-1 flex flex-row items-center justify-between sm:justify-around gap-2.5 sm:gap-4 my-auto min-h-0 w-full">
+        {/* Donut Ring (Kiri) */}
+        <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 flex items-center justify-center shrink-0">
           <svg
             width="100%"
             height="100%"
@@ -204,8 +204,8 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
           </svg>
         </div>
 
-        {/* Legend 3 Kategori */}
-        <div className="flex flex-col gap-2 w-full sm:w-auto min-w-0 sm:min-w-[190px]">
+        {/* Legend 3 Kategori (Kanan) */}
+        <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5 sm:gap-2">
           {categories.map((cat) => {
             const isSelected = activeCategory?.name === cat.name
 
@@ -216,23 +216,23 @@ export function ProductDonutChart({ onViewAll }: ProductDonutChartProps) {
                 onMouseEnter={() => setActiveCategory(cat)}
                 onMouseLeave={() => setActiveCategory(null)}
                 onClick={() => handleToggleCategory(cat)}
-                className={`flex items-center justify-between gap-3 text-xs px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-[12px] cursor-pointer transition-all text-left ${
+                className={`flex items-center justify-between gap-1.5 sm:gap-2 text-[11px] sm:text-xs px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-[10px] sm:rounded-[12px] cursor-pointer transition-all text-left w-full ${
                   isSelected
-                    ? 'bg-[#f4effe] ring-1 ring-purple-300/80 shadow-xs scale-[1.01]'
+                    ? 'bg-[#f4effe] ring-1 ring-purple-300/80 shadow-xs'
                     : 'hover:bg-slate-50'
                 }`}
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                   <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: cat.color }}
                   />
                   <span className="font-semibold text-slate-700 truncate">
                     {cat.name}
                   </span>
                 </div>
-                <span className="font-semibold text-slate-800 text-right shrink-0 pl-1">
-                  {cat.count} <span className="hidden sm:inline">Produk</span>{' '}
+                <span className="font-bold text-slate-800 text-right shrink-0 text-[10.5px] sm:text-xs pl-1">
+                  {cat.count}{' '}
                   <span className="text-slate-400 font-normal">
                     ({cat.percent}%)
                   </span>
