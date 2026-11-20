@@ -658,37 +658,50 @@ export function ProductListView(props: ProductListViewProps = {}) {
 
       {/* 2. Kartu Tabel Produk: Full Width, Border 15px, Scrollable Table */}
       <div className="flex-1 bg-white rounded-[15px] p-3 sm:p-4 lg:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col min-h-0 overflow-hidden">
-        <div className="flex-1 flex flex-col min-h-0 overflow-x-auto">
-          <div className="min-w-[680px] flex-1 flex flex-col min-h-0">
-            {/* Table Header Row Berwarna (Fixed di atas) */}
-            <div className="shrink-0 mb-1 pr-1">
-              <table className="w-full text-left text-xs border-collapse table-fixed">
-                <thead>
-                  <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                    <th className="py-3 px-3 text-center w-[7%] min-w-[50px] rounded-l-[15px]">NO.</th>
-                    <th className="py-3 px-3 text-center w-[10%] min-w-[70px]">GAMBAR</th>
-                    <th className="py-3 px-4 text-left w-[23%]">NAMA PRODUK</th>
-                    <th className="py-3 px-4 text-left w-[20%]">KATEGORI</th>
-                    <th className="py-3 px-3 text-center w-[14%]">HARGA</th>
-                    <th className="py-3 px-3 text-center w-[14%]">STOK</th>
-                    <th className="py-3 px-3 text-center w-[12%] min-w-[75px] rounded-r-[15px]">AKSI</th>
-                  </tr>
-                </thead>
-              </table>
+        {filteredProducts.length === 0 ? (
+          <div className="h-full flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#faf8fe] rounded-[15px] border border-purple-100/60 my-1">
+            <div className="w-12 h-12 rounded-[15px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-3 shadow-2xs">
+              <Package className="w-6 h-6 stroke-[1.8]" />
             </div>
-
-            {/* Area Scroll Daftar Produk */}
-            <div className="overflow-y-auto flex-1 min-h-0 pr-1">
-              <table className="w-full text-left text-xs border-collapse table-fixed">
-                <tbody className="divide-y divide-slate-100/80">
-              {filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400 text-xs">
-                    Tidak ada produk ditemukan.
-                  </td>
+            <p className="text-sm sm:text-base font-bold text-slate-800">
+              {searchQuery || categoryFilter !== 'semua'
+                ? 'Produk tidak ditemukan'
+                : 'Belum ada produk di inventaris'}
+            </p>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm">
+              {searchQuery || categoryFilter !== 'semua'
+                ? 'Coba gunakan kata kunci lain atau bersihkan filter kategori'
+                : 'Klik tombol "Tambah Produk" di atas untuk menambahkan barang pertama Anda'}
+            </p>
+            {(searchQuery || categoryFilter !== 'semua') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('')
+                  setCategoryFilter('semua')
+                }}
+                className="mt-3 px-3.5 py-1.5 rounded-[10px] bg-[#673ee8] text-white text-xs font-semibold cursor-pointer shadow-xs active:scale-95 transition-all"
+              >
+                Reset Pencarian &amp; Filter
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto pr-1">
+            <table className="w-full min-w-[700px] text-left text-xs border-collapse">
+              <thead className="sticky top-0 z-10 bg-white">
+                <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+                  <th className="py-3 px-3 text-center w-12 rounded-l-[15px]">NO.</th>
+                  <th className="py-3 px-3 text-center w-16">GAMBAR</th>
+                  <th className="py-3 px-4 text-left min-w-[150px]">NAMA PRODUK</th>
+                  <th className="py-3 px-4 text-left w-36">KATEGORI</th>
+                  <th className="py-3 px-3 text-center w-28">HARGA</th>
+                  <th className="py-3 px-3 text-center w-28">STOK</th>
+                  <th className="py-3 px-3 text-center w-20 rounded-r-[15px]">AKSI</th>
                 </tr>
-              ) : (
-                filteredProducts.map((item) => {
+              </thead>
+              <tbody className="divide-y divide-slate-100/80">
+                {filteredProducts.map((item) => {
                   const isOutOfStock = item.stokJumlah === 0
                   const isJenazahOrRoll =
                     item.kategori === 'Perlengkapan Jenazah' ||
@@ -702,12 +715,12 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       className="hover:bg-[#faf8fe] transition-colors"
                     >
                       {/* NO */}
-                      <td className="py-3.5 px-3 text-center text-slate-500 font-medium w-[7%] min-w-[50px]">
+                      <td className="py-3.5 px-3 text-center text-slate-500 font-medium w-12">
                         {item.no}
                       </td>
 
                       {/* GAMBAR */}
-                      <td className="py-2.5 px-3 text-center w-[10%] min-w-[70px]">
+                      <td className="py-2.5 px-3 text-center w-16">
                         <div className="flex justify-center">
                           <ProductThumbnail
                             type={item.imageType}
@@ -717,26 +730,26 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       </td>
 
                       {/* NAMA PRODUK */}
-                      <td className="py-3.5 px-4 text-left w-[23%]">
+                      <td className="py-3.5 px-4 text-left min-w-[150px]">
                         <p className="font-bold text-xs sm:text-[13px] text-slate-800">
                           {item.namaProduk}
                         </p>
                       </td>
 
-                      {/* KATEGORI (RATA KIRI) */}
-                      <td className="py-3.5 px-4 text-left w-[20%]">
+                      {/* KATEGORI */}
+                      <td className="py-3.5 px-4 text-left w-36 whitespace-nowrap">
                         <span className="inline-block px-3 py-1 rounded-[15px] text-[11px] font-semibold bg-[#f0e9fd] text-[#673ee8]">
                           {item.kategori}
                         </span>
                       </td>
 
                       {/* HARGA */}
-                      <td className="py-3.5 px-3 text-center font-bold text-slate-800 text-xs sm:text-[13px] w-[14%]">
-                        {item.harga.toLocaleString('id-ID')}
+                      <td className="py-3.5 px-3 text-center font-bold text-slate-800 text-xs sm:text-[13px] w-28 whitespace-nowrap">
+                        Rp {item.harga.toLocaleString('id-ID')}
                       </td>
 
                       {/* STOK DENGAN PILL BERWARNA */}
-                      <td className="py-3.5 px-3 text-center w-[14%]">
+                      <td className="py-3.5 px-3 text-center w-28 whitespace-nowrap">
                         <span
                           className={`inline-block px-3 py-1 rounded-[15px] text-[11px] font-bold ${
                             isOutOfStock
@@ -751,9 +764,8 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       </td>
 
                       {/* AKSI: EDIT & HAPUS */}
-                      <td className="py-3.5 px-3 text-center w-[12%] min-w-[75px]">
+                      <td className="py-3.5 px-3 text-center w-20">
                         <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                          {/* Tombol Edit */}
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(item)}
@@ -762,8 +774,6 @@ export function ProductListView(props: ProductListViewProps = {}) {
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
-
-                          {/* Tombol Hapus */}
                           <button
                             type="button"
                             onClick={() => handleOpenDeleteConfirm(item)}
@@ -776,14 +786,12 @@ export function ProductListView(props: ProductListViewProps = {}) {
                       </td>
                     </tr>
                   )
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-    </div>
-  </div>
 
       {/* POPUP MODAL KONFIRMASI HAPUS PRODUK: DIPORTAL KE BODY, FULL CENTER, BACKGROUND GELAP NON-BLUR */}
       {productToDelete &&

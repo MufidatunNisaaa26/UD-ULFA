@@ -174,7 +174,7 @@ export function DashboardPage() {
               ) : dashboardSubView === 'financial-detail' ? (
                 <FinanceView />
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 gap-3.5 sm:gap-4 lg:gap-4 flex-1 min-h-0 pb-6 lg:pb-0">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 lg:grid-rows-2 gap-3.5 sm:gap-4 lg:gap-4 flex-1 min-h-0 pb-6 lg:pb-0">
                   {/* Kartu 1 (Kiri Atas): Grafik Total Produk */}
                   <div className="min-h-[260px] lg:min-h-0 h-full overflow-hidden">
                     <ProductDonutChart

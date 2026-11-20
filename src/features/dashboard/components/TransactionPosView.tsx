@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Search,
@@ -9,6 +10,7 @@ import {
   CheckCircle2,
   Printer,
   AlertCircle,
+  ArrowLeft,
 } from 'lucide-react'
 import {
   useTransactionPos,
@@ -51,100 +53,181 @@ export function TransactionPosView() {
     handleCloseSuccessModal,
   } = useTransactionPos()
 
+  const [mobileTab, setMobileTab] = useState<'catalog' | 'cart'>('catalog')
+
   return (
-    <div className="w-full h-full min-h-0 flex flex-col lg:flex-row gap-3.5 sm:gap-4 select-none overflow-y-auto lg:overflow-hidden pb-1">
-      {/* 1. Kolom Kiri: Katalog Produk (Grid Produk) */}
-      <div className="flex-1 bg-white rounded-[20px] p-3.5 sm:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/50 flex flex-col min-h-[420px] lg:min-h-0 lg:h-full overflow-hidden">
-        {/* Search Bar */}
-        <div className="relative mb-3 shrink-0">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari nama barang, barcode, atau kategori..."
-            className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-[13px] rounded-[15px] bg-[#fcfaff] border border-purple-100/80 shadow-[0_2px_12px_rgba(103,62,232,0.03)] focus:outline-none focus:border-[#673ee8] focus:bg-white text-slate-800 placeholder:text-slate-400 transition-all"
-          />
-        </div>
+    <div className="w-full h-full min-h-0 flex flex-col gap-3 select-none pb-1 relative overflow-hidden">
+      {/* Switcher Tab Khusus Mobile & Tablet (< lg) */}
+      <div className="flex lg:hidden items-center p-1 bg-white rounded-[15px] border border-purple-100/70 shadow-2xs shrink-0">
+        <button
+          type="button"
+          onClick={() => setMobileTab('catalog')}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-[12px] transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            mobileTab === 'catalog'
+              ? 'bg-[#673ee8] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Search className="w-3.5 h-3.5" />
+          <span>Katalog Produk</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab('cart')}
+          className={`flex-1 py-1.5 text-xs font-bold rounded-[12px] transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+            mobileTab === 'cart'
+              ? 'bg-[#673ee8] text-white shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <ShoppingBag className="w-3.5 h-3.5" />
+          <span>Keranjang &amp; Kasir</span>
+          {totalItems > 0 && (
+            <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-900 shadow-2xs">
+              {totalItems}
+            </span>
+          )}
+        </button>
+      </div>
 
-        {/* Category Filter Pills */}
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 mb-3 shrink-0 scrollbar-none">
-          {CATEGORY_TABS.map((tab) => {
-            const isActive = selectedCategory === tab
-            return (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setSelectedCategory(tab)}
-                className={`px-3.5 py-1.5 rounded-[12px] text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-[#673ee8] text-white shadow-sm shadow-purple-600/25'
-                    : 'bg-[#f0e9fd]/60 hover:bg-[#f0e9fd] text-slate-600 hover:text-[#673ee8]'
-                }`}
-              >
-                {tab}
-              </button>
-            )
-          })}
-        </div>
+      {/* Kontainer Utama: 2 Kolom di Desktop, Tab Switcher di Mobile */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3.5 sm:gap-4 overflow-hidden">
+        {/* 1. Kolom Kiri: Katalog Produk (Grid Produk) */}
+        <div
+          className={`flex-1 bg-white rounded-[20px] p-3.5 sm:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/50 flex-col min-h-0 h-full overflow-hidden ${
+            mobileTab === 'catalog' ? 'flex' : 'hidden lg:flex'
+          }`}
+        >
+          {/* Search Bar */}
+          <div className="relative mb-3 shrink-0">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama barang, barcode, atau kategori..."
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-[13px] rounded-[15px] bg-[#fcfaff] border border-purple-100/80 shadow-[0_2px_12px_rgba(103,62,232,0.03)] focus:outline-none focus:border-[#673ee8] focus:bg-white text-slate-800 placeholder:text-slate-400 transition-all"
+            />
+          </div>
 
-        {/* Product Grid (Scrollable) */}
-        <div className="flex-1 min-h-0 overflow-y-auto pr-1">
-          {filteredProducts.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400">
-              <ShoppingBag className="w-10 h-10 mb-2 stroke-[1.5] text-purple-300" />
-              <p className="text-xs sm:text-sm font-semibold text-slate-600">
-                Barang tidak ditemukan
-              </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Coba gunakan kata kunci pencarian atau kategori lain
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5 pb-2">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white rounded-[15px] border border-slate-100 hover:border-purple-200/80 shadow-[0_2px_10px_rgba(103,62,232,0.03)] hover:shadow-md transition-all p-2.5 flex flex-col justify-between group"
+          {/* Category Filter Pills */}
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 mb-3 shrink-0 scrollbar-none">
+            {CATEGORY_TABS.map((tab) => {
+              const isActive = selectedCategory === tab
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setSelectedCategory(tab)}
+                  className={`px-3.5 py-1.5 rounded-[12px] text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-[#673ee8] text-white shadow-sm shadow-purple-600/25'
+                      : 'bg-[#f0e9fd]/60 hover:bg-[#f0e9fd] text-slate-600 hover:text-[#673ee8]'
+                  }`}
                 >
-                  {/* Gambar Produk */}
-                  <div className="w-full aspect-[4/3] rounded-[12px] bg-[#f5f3fb] overflow-hidden mb-2 relative flex items-center justify-center">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                  </div>
+                  {tab}
+                </button>
+              )
+            })}
+          </div>
 
-                  {/* Nama Produk */}
-                  <p className="text-xs sm:text-[13px] font-bold text-slate-800 line-clamp-2 leading-tight min-h-[32px] mb-2">
-                    {product.name}
-                  </p>
+          {/* Product Grid (Scrollable) */}
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+            {filteredProducts.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400">
+                <ShoppingBag className="w-10 h-10 mb-2 stroke-[1.5] text-purple-300" />
+                <p className="text-xs sm:text-sm font-semibold text-slate-600">
+                  Barang tidak ditemukan
+                </p>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Coba gunakan kata kunci pencarian atau kategori lain
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5 pb-2">
+                {filteredProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-[15px] border border-slate-100 hover:border-purple-200/80 shadow-[0_2px_10px_rgba(103,62,232,0.03)] hover:shadow-md transition-all p-2.5 flex flex-col justify-between group"
+                  >
+                    {/* Gambar Produk */}
+                    <div className="w-full aspect-[4/3] rounded-[12px] bg-[#f5f3fb] overflow-hidden mb-2 relative flex items-center justify-center">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      />
+                    </div>
 
-                  {/* Baris Harga & Tombol Tambah [+] */}
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-100/60">
-                    <span className="text-xs sm:text-[13px] font-extrabold text-[#673ee8]">
-                      Rp {product.price.toLocaleString('id-ID')}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => addItem(product)}
-                      title="Tambah ke Keranjang"
-                      className="w-7 h-7 rounded-[8px] bg-[#673ee8] hover:bg-[#582bc4] active:scale-90 text-white flex items-center justify-center transition-all cursor-pointer shadow-xs shadow-purple-600/20"
-                    >
-                      <Plus className="w-4 h-4 stroke-[2.5]" />
-                    </button>
+                    {/* Nama Produk */}
+                    <p className="text-xs sm:text-[13px] font-bold text-slate-800 line-clamp-2 leading-tight min-h-[32px] mb-2">
+                      {product.name}
+                    </p>
+
+                    {/* Baris Harga & Tombol Tambah [+] */}
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-100/60">
+                      <span className="text-xs sm:text-[13px] font-extrabold text-[#673ee8]">
+                        Rp {product.price.toLocaleString('id-ID')}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => addItem(product)}
+                        title="Tambah ke Keranjang"
+                        className="w-7 h-7 rounded-[8px] bg-[#673ee8] hover:bg-[#582bc4] active:scale-90 text-white flex items-center justify-center transition-all cursor-pointer shadow-xs shadow-purple-600/20"
+                      >
+                        <Plus className="w-4 h-4 stroke-[2.5]" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Bar Keranjang Khusus Mobile saat ada barang */}
+          {totalItems > 0 && (
+            <div className="flex lg:hidden items-center justify-between mt-2 pt-2 border-t border-purple-100 shrink-0">
+              <div>
+                <p className="text-[10px] text-slate-500 font-medium">
+                  {totalItems} Item terpilih
+                </p>
+                <p className="text-xs font-black text-[#673ee8]">
+                  Rp {totalBayar.toLocaleString('id-ID')}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileTab('cart')}
+                className="px-3.5 py-1.5 rounded-[12px] bg-[#673ee8] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm shadow-purple-600/20 cursor-pointer active:scale-95"
+              >
+                <span>Lihat Keranjang</span>
+                <ShoppingBag className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
         </div>
-      </div>
 
-      {/* 2. Kolom Kanan: Panel Kasir & Keranjang Transaksi */}
-      <div className="w-full lg:w-80 xl:w-[350px] shrink-0 flex flex-col justify-between bg-white rounded-[20px] p-3.5 sm:p-4 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-[480px] lg:min-h-0 lg:h-full overflow-hidden">
+        {/* 2. Kolom Kanan: Panel Kasir & Keranjang Transaksi */}
+        <div
+          className={`w-full lg:w-80 xl:w-[350px] shrink-0 flex-col justify-between bg-white rounded-[20px] p-3.5 sm:p-4 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-0 h-full overflow-hidden ${
+            mobileTab === 'cart' ? 'flex' : 'hidden lg:flex'
+          }`}
+        >
+          {/* Header Bar Mobile: Kembali ke Katalog */}
+          <div className="flex lg:hidden items-center justify-between pb-2 mb-1 border-b border-slate-100 shrink-0">
+            <button
+              type="button"
+              onClick={() => setMobileTab('catalog')}
+              className="flex items-center gap-1.5 text-xs font-semibold text-[#673ee8] hover:text-[#5326cf] cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Kembali ke Katalog</span>
+            </button>
+            <span className="text-[11px] font-bold text-slate-500">
+              {totalItems} Item
+            </span>
+          </div>
         {/* Header Panel Kasir: Nomor Transaksi & Waktu */}
         <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 shrink-0">
           <div className="bg-[#f0e9fd] text-[#673ee8] font-bold text-xs px-2.5 py-1 rounded-[8px] flex items-center gap-1 shadow-2xs">
@@ -327,6 +410,7 @@ export function TransactionPosView() {
             </button>
           </div>
         </div>
+      </div>
       </div>
 
       {/* POPUP MODAL STRUK BERHASIL / SUKSES */}

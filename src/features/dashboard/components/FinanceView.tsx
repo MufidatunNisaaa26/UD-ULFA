@@ -103,27 +103,46 @@ export function FinanceView() {
           </div>
 
           {/* Area Scroll Tabel Transaksi: Mendukung Scroll Vertikal & Horizontal untuk Semua Atribut */}
-          <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 pr-1">
-            <table className="w-full min-w-[560px] text-left text-xs border-collapse">
-              <thead className="sticky top-0 z-10 bg-white">
-                <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                  <th className="py-3 px-2.5 text-center w-12 rounded-l-[12px]">NO.</th>
-                  <th className="py-3 px-3 w-40 text-left">TANGGAL WAKTU</th>
-                  <th className="py-3 px-3 text-left">KETERANGAN</th>
-                  <th className="py-3 px-3 w-28 text-center">KATEGORI</th>
-                  <th className="py-3 px-3 w-32 text-right">NOMINAL</th>
-                  <th className="py-3 px-2 text-center w-10 rounded-r-[12px]"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100/80">
-                {filteredTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400 text-xs">
-                      Tidak ada riwayat transaksi keuangan ditemukan.
-                    </td>
+          {filteredTransactions.length === 0 ? (
+            <div className="h-full flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#faf8fe] rounded-[15px] border border-purple-100/60 my-1">
+              <div className="w-12 h-12 rounded-[15px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-3 shadow-2xs">
+                <ReceiptText className="w-6 h-6 stroke-[1.8]" />
+              </div>
+              <p className="text-sm sm:text-base font-bold text-slate-800">
+                {searchQuery
+                  ? 'Transaksi keuangan tidak ditemukan'
+                  : 'Belum ada riwayat transaksi keuangan'}
+              </p>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                {searchQuery
+                  ? 'Coba gunakan kata kunci lain untuk mencari mutasi keuangan'
+                  : 'Mutasi transaksi kasir dan pengeluaran manual akan tercatat di sini'}
+              </p>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="mt-3 px-3.5 py-1.5 rounded-[10px] bg-[#673ee8] text-white text-xs font-semibold cursor-pointer shadow-xs active:scale-95 transition-all"
+                >
+                  Reset Pencarian
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto overflow-y-auto flex-1 min-h-0 pr-1">
+              <table className="w-full min-w-[560px] text-left text-xs border-collapse">
+                <thead className="sticky top-0 z-10 bg-white">
+                  <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+                    <th className="py-3 px-2.5 text-center w-12 rounded-l-[12px]">NO.</th>
+                    <th className="py-3 px-3 w-40 text-left">TANGGAL WAKTU</th>
+                    <th className="py-3 px-3 text-left">KETERANGAN</th>
+                    <th className="py-3 px-3 w-28 text-center">KATEGORI</th>
+                    <th className="py-3 px-3 w-32 text-right">NOMINAL</th>
+                    <th className="py-3 px-2 text-center w-10 rounded-r-[12px]"></th>
                   </tr>
-                ) : (
-                  filteredTransactions.map((trx) => {
+                </thead>
+                <tbody className="divide-y divide-slate-100/80">
+                  {filteredTransactions.map((trx) => {
                     const isPemasukan = trx.kategori === 'Pemasukan'
 
                     return (
@@ -186,11 +205,11 @@ export function FinanceView() {
                         </td>
                       </tr>
                     )
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* 2. Kolom Kanan: Input Pengeluaran & Ringkasan Hari Ini */}

@@ -247,32 +247,44 @@ export function TransactionReceiptDetailView() {
 
         {/* Kartu Tabel Riwayat Struk */}
         <div className="flex-1 bg-white rounded-[15px] p-3 sm:p-4 lg:p-5 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex flex-col min-h-0 overflow-hidden">
-          {/* Header Tabel Berwarna (Fixed di atas, di luar area scroll) */}
-          <div className="shrink-0 mb-1.5 pr-1">
-            <table className="w-full text-left text-xs border-collapse table-fixed">
-              <thead>
-                <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                  <th className="py-3 px-2 text-center w-12 rounded-l-[15px]">NO.</th>
-                  <th className="py-3 px-3">ID STRUK</th>
-                  <th className="py-3 px-3 text-center w-28 sm:w-32">WAKTU</th>
-                  <th className="py-3 px-3 text-right w-24 sm:w-28 rounded-r-[15px]">AKSI</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-
-          {/* Area Scroll Daftar Struk */}
-          <div className="overflow-y-auto flex-1 min-h-0 pr-1">
-            <table className="w-full text-left text-xs border-collapse table-fixed">
-              <tbody className="divide-y divide-slate-100/80">
-                {filteredTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="py-8 text-center text-slate-400 text-xs">
-                      Tidak ada transaksi ditemukan.
-                    </td>
+          {filteredTransactions.length === 0 ? (
+            <div className="h-full flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#faf8fe] rounded-[15px] border border-purple-100/60 my-1">
+              <div className="w-12 h-12 rounded-[15px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-3 shadow-2xs">
+                <ReceiptText className="w-6 h-6 stroke-[1.8]" />
+              </div>
+              <p className="text-sm sm:text-base font-bold text-slate-800">
+                {searchQuery
+                  ? 'Struk transaksi tidak ditemukan'
+                  : 'Belum ada riwayat transaksi'}
+              </p>
+              <p className="text-xs text-slate-400 mt-1 max-w-sm">
+                {searchQuery
+                  ? 'Coba gunakan kata kunci nomor nota atau nama barang lain'
+                  : 'Transaksi yang diproses di kasir POS akan tercatat di sini'}
+              </p>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="mt-3 px-3.5 py-1.5 rounded-[10px] bg-[#673ee8] text-white text-xs font-semibold cursor-pointer shadow-xs active:scale-95 transition-all"
+                >
+                  Reset Pencarian
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto pr-1">
+              <table className="w-full min-w-[460px] text-left text-xs border-collapse">
+                <thead className="sticky top-0 z-10 bg-white">
+                  <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+                    <th className="py-3 px-2 text-center w-12 rounded-l-[15px]">NO.</th>
+                    <th className="py-3 px-3">ID STRUK</th>
+                    <th className="py-3 px-3 text-center w-28 sm:w-32">WAKTU</th>
+                    <th className="py-3 px-3 text-right w-24 sm:w-28 rounded-r-[15px]">AKSI</th>
                   </tr>
-                ) : (
-                  filteredTransactions.map((trx) => {
+                </thead>
+                <tbody className="divide-y divide-slate-100/80">
+                  {filteredTransactions.map((trx) => {
                     const isSelected = selectedReceiptId === trx.id
 
                     return (
@@ -334,11 +346,11 @@ export function TransactionReceiptDetailView() {
                         </td>
                       </tr>
                     )
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 

@@ -62,8 +62,8 @@ export function TransactionReceiptHistory({
       <div className="flex-1 flex flex-col justify-center overflow-hidden">
         {/* Table Head */}
         <div className="grid grid-cols-12 text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider pb-2 border-b border-slate-100 px-1">
-          <div className="col-span-5">No. Struk</div>
-          <div className="col-span-2 text-center">Waktu</div>
+          <div className="col-span-4">No. Struk</div>
+          <div className="col-span-3 text-center">Waktu</div>
           <div className="col-span-3 text-right">Nominal</div>
           <div className="col-span-2 text-right">Metode</div>
         </div>
@@ -80,8 +80,8 @@ export function TransactionReceiptHistory({
                 key={item.id}
                 className="grid grid-cols-12 items-center py-2.5 px-1 hover:bg-[#faf8fe] rounded-[15px] transition-colors"
               >
-                <div className="col-span-5 pr-2">
-                  <p className="text-xs font-bold text-slate-800 leading-tight">
+                <div className="col-span-4 pr-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-800 leading-tight truncate">
                     {item.id}
                   </p>
                   <p className="text-[10px] text-slate-400 font-medium truncate mt-0.5">
@@ -89,16 +89,16 @@ export function TransactionReceiptHistory({
                   </p>
                 </div>
 
-                <div className="col-span-2 text-center text-xs font-medium text-slate-500">
+                <div className="col-span-3 text-center text-xs font-medium text-slate-500 whitespace-nowrap">
                   {item.time}
                 </div>
 
-                <div className="col-span-3 text-right text-xs font-bold text-slate-800">
+                <div className="col-span-3 text-right text-xs font-bold text-slate-800 whitespace-nowrap">
                   {item.amount}
                 </div>
 
                 <div className="col-span-2 text-right">
-                  <span className="inline-block px-2.5 py-0.5 rounded-[15px] bg-[#f4effe] text-[#673ee8] text-[10px] sm:text-[11px] font-semibold">
+                  <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded-[15px] bg-[#f4effe] text-[#673ee8] text-[9.5px] sm:text-[11px] font-semibold whitespace-nowrap">
                     {item.method}
                   </span>
                 </div>

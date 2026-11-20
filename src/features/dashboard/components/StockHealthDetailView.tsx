@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { Search, ChevronDown, Check } from 'lucide-react'
+import { Search, ChevronDown, Check, Package } from 'lucide-react'
 import { useProductStore } from '../stores/useProductStore'
 
 export interface StockItem {
@@ -120,7 +120,7 @@ export function StockHealthDetailView() {
   return (
     <div className="flex flex-col gap-4 sm:gap-5 h-full min-h-0 select-none pb-1 overflow-hidden">
       {/* 1. Baris Atas: 3 Kartu Metrik Status Stok */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 shrink-0">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 shrink-0">
         {/* Tersedia */}
         <div
           onClick={() =>
@@ -128,19 +128,19 @@ export function StockHealthDetailView() {
               prev === 'Tersedia' ? null : 'Tersedia'
             )
           }
-          className={`rounded-[15px] bg-[#ecfdf5] border p-4 sm:p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-xs ${
+          className={`rounded-[15px] bg-[#ecfdf5] border p-2.5 sm:p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-xs ${
             selectedStatusFilter === 'Tersedia'
               ? 'ring-2 ring-emerald-500 border-emerald-400 bg-emerald-100/60'
               : 'border-emerald-200/60 hover:bg-emerald-50/90'
           }`}
         >
-          <p className="text-xs sm:text-sm font-semibold text-emerald-800">
+          <p className="text-[11px] sm:text-sm font-semibold text-emerald-800">
             Tersedia
           </p>
-          <p className="text-3xl sm:text-4xl font-extrabold text-[#059669] my-1 tracking-tight">
+          <p className="text-xl sm:text-4xl font-extrabold text-[#059669] my-0.5 sm:my-1 tracking-tight">
             {countTersedia}
           </p>
-          <p className="text-[11px] sm:text-xs font-semibold text-emerald-700">
+          <p className="text-[10px] sm:text-xs font-semibold text-emerald-700">
             Produk
           </p>
         </div>
@@ -152,19 +152,19 @@ export function StockHealthDetailView() {
               prev === 'Menipis' ? null : 'Menipis'
             )
           }
-          className={`rounded-[15px] bg-[#fffbeb] border p-4 sm:p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-xs ${
+          className={`rounded-[15px] bg-[#fffbeb] border p-2.5 sm:p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-xs ${
             selectedStatusFilter === 'Menipis'
               ? 'ring-2 ring-amber-500 border-amber-400 bg-amber-100/60'
               : 'border-amber-200/60 hover:bg-amber-50/90'
           }`}
         >
-          <p className="text-xs sm:text-sm font-semibold text-amber-800">
+          <p className="text-[11px] sm:text-sm font-semibold text-amber-800">
             Menipis
           </p>
-          <p className="text-3xl sm:text-4xl font-extrabold text-[#d97706] my-1 tracking-tight">
+          <p className="text-xl sm:text-4xl font-extrabold text-[#d97706] my-0.5 sm:my-1 tracking-tight">
             {countMenipis}
           </p>
-          <p className="text-[11px] sm:text-xs font-semibold text-amber-700">
+          <p className="text-[10px] sm:text-xs font-semibold text-amber-700">
             Produk
           </p>
         </div>
@@ -176,19 +176,19 @@ export function StockHealthDetailView() {
               prev === 'Habis' ? null : 'Habis'
             )
           }
-          className={`rounded-[15px] bg-[#fff1f2] border p-4 sm:p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-xs ${
+          className={`rounded-[15px] bg-[#fff1f2] border p-2.5 sm:p-5 flex flex-col items-center justify-center text-center transition-all cursor-pointer shadow-xs ${
             selectedStatusFilter === 'Habis'
               ? 'ring-2 ring-rose-500 border-rose-400 bg-rose-100/60'
               : 'border-rose-200/60 hover:bg-rose-50/90'
           }`}
         >
-          <p className="text-xs sm:text-sm font-semibold text-rose-800">
+          <p className="text-[11px] sm:text-sm font-semibold text-rose-800">
             Habis
           </p>
-          <p className="text-3xl sm:text-4xl font-extrabold text-[#e11d48] my-1 tracking-tight">
+          <p className="text-xl sm:text-4xl font-extrabold text-[#e11d48] my-0.5 sm:my-1 tracking-tight">
             {countHabis}
           </p>
-          <p className="text-[11px] sm:text-xs font-semibold text-rose-700">
+          <p className="text-[10px] sm:text-xs font-semibold text-rose-700">
             Produk
           </p>
         </div>
@@ -257,35 +257,50 @@ export function StockHealthDetailView() {
           </div>
         </div>
 
-        {/* 3. Header Tabel Berwarna (Fixed di Luar Area Scroll) */}
-        <div className="shrink-0 mb-1.5 pr-1">
-          <table className="w-full text-left text-xs border-collapse table-fixed">
-            <thead>
-              <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3 px-2 text-center w-14 rounded-l-[15px]">NO</th>
-                <th className="py-3 px-4 w-[33%] text-left">NAMA PRODUK</th>
-                <th className="py-3 px-4 w-[24%] text-left">KATEGORI</th>
-                <th className="py-3 px-4 w-[18%] text-left">SISA STOK</th>
-                <th className="py-3 px-4 text-left rounded-r-[15px]">
-                  STATUS
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-
-        {/* 4. Area Scroll Daftar Produk: Scrollbar Mulai dari Baris Pertama */}
-        <div className="overflow-y-auto flex-1 min-h-0 pr-1">
-          <table className="w-full text-left text-xs border-collapse table-fixed">
-            <tbody className="divide-y divide-slate-100/80">
-              {filteredStock.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-10 text-center text-slate-400 text-xs">
-                    Tidak ada produk stok yang cocok dengan kriteria.
-                  </td>
+        {/* 3. Tabel Stok Produk / State Kosong Responsif */}
+        {filteredStock.length === 0 ? (
+          <div className="h-full flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#faf8fe] rounded-[15px] border border-purple-100/60 my-1">
+            <div className="w-12 h-12 rounded-[15px] bg-[#f0e9fd] text-[#673ee8] flex items-center justify-center mb-3 shadow-2xs">
+              <Package className="w-6 h-6 stroke-[1.8]" />
+            </div>
+            <p className="text-sm sm:text-base font-bold text-slate-800">
+              {searchQuery || selectedCategory !== 'Semua Kategori' || selectedStatusFilter
+                ? 'Tidak ada produk stok yang cocok'
+                : 'Belum ada data stok produk'}
+            </p>
+            <p className="text-xs text-slate-400 mt-1 max-w-sm">
+              {searchQuery || selectedCategory !== 'Semua Kategori' || selectedStatusFilter
+                ? 'Coba ubah kata kunci pencarian atau bersihkan filter status'
+                : 'Data stok akan otomatis diperbarui sesuai produk di toko'}
+            </p>
+            {(searchQuery || selectedCategory !== 'Semua Kategori' || selectedStatusFilter) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('')
+                  setSelectedCategory('Semua Kategori')
+                  setSelectedStatusFilter(null)
+                }}
+                className="mt-3 px-3.5 py-1.5 rounded-[10px] bg-[#673ee8] text-white text-xs font-semibold cursor-pointer shadow-xs active:scale-95 transition-all"
+              >
+                Reset Filter &amp; Pencarian
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto pr-1">
+            <table className="w-full min-w-[580px] text-left text-xs border-collapse">
+              <thead className="sticky top-0 z-10 bg-white">
+                <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+                  <th className="py-3 px-2 text-center w-14 rounded-l-[15px]">NO</th>
+                  <th className="py-3 px-4 w-[33%] text-left">NAMA PRODUK</th>
+                  <th className="py-3 px-4 w-[24%] text-left">KATEGORI</th>
+                  <th className="py-3 px-4 w-[18%] text-left">SISA STOK</th>
+                  <th className="py-3 px-4 text-left rounded-r-[15px]">STATUS</th>
                 </tr>
-              ) : (
-                filteredStock.map((item) => (
+              </thead>
+              <tbody className="divide-y divide-slate-100/80">
+                {filteredStock.map((item) => (
                   <tr
                     key={item.no}
                     className="hover:bg-[#faf8fe] transition-colors"
@@ -347,11 +362,11 @@ export function StockHealthDetailView() {
                       )}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )
