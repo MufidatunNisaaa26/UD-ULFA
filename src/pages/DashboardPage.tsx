@@ -62,11 +62,7 @@ export function DashboardPage() {
             isSidebarCollapsed
               ? 'px-3 sm:pl-3 sm:pr-6 lg:pr-8'
               : 'px-3 sm:px-6 lg:px-8'
-          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col scroll-smooth ${
-            currentTab === 'dashboard' && dashboardSubView === 'overview'
-              ? 'overflow-y-auto lg:overflow-hidden'
-              : 'overflow-y-auto overflow-x-hidden'
-          }`}
+          } pt-2.5 sm:pt-3.5 pb-2.5 sm:pb-3 flex flex-col scroll-smooth overflow-y-auto overflow-x-hidden`}
         >
           {/* Header Konten: Breadcrumb di Kiri & Tanggal di Kanan */}
           <header className="w-full flex items-center justify-between pb-2.5 sm:pb-3 gap-2 shrink-0">

@@ -210,7 +210,7 @@ export function TransactionPosView() {
 
         {/* 2. Kolom Kanan: Panel Kasir & Keranjang Transaksi */}
         <div
-          className={`w-full lg:w-80 xl:w-[350px] shrink-0 flex-col justify-between bg-white rounded-[20px] p-3.5 sm:p-4 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-0 h-full overflow-hidden ${
+          className={`w-full lg:w-80 xl:w-[350px] shrink-0 flex-col justify-between bg-white rounded-[20px] p-3.5 sm:p-4 border border-purple-100/50 shadow-[0_4px_24px_rgba(103,62,232,0.04)] min-h-0 h-full overflow-y-auto ${
             mobileTab === 'cart' ? 'flex' : 'hidden lg:flex'
           }`}
         >

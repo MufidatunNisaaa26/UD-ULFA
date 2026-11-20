@@ -356,7 +356,7 @@ export function TransactionReceiptDetailView() {
 
       {/* Kolom Kanan: Preview Struk Termal Kasir (5/12 di Desktop, Tab di Mobile) */}
       <div
-        className={`lg:col-span-5 h-full bg-white rounded-[15px] p-3 sm:p-4 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex-col justify-between min-h-0 overflow-hidden w-full ${
+        className={`lg:col-span-5 h-full bg-white rounded-[15px] p-3 sm:p-4 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex-col justify-between min-h-0 overflow-y-auto w-full ${
           mobileActiveTab === 'preview' ? 'flex' : 'hidden lg:flex'
         }`}
       >
