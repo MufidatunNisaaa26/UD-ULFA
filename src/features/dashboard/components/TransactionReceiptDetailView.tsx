@@ -6,8 +6,11 @@ import {
   ReceiptText,
   Check,
   ArrowLeft,
+  FileSpreadsheet,
+  Ban,
 } from 'lucide-react'
 import { api } from '../../../services/api'
+import { useProductStore } from '../stores/useProductStore'
 
 export interface ReceiptItemLine {
   name: string
@@ -31,12 +34,15 @@ export interface TransactionReceipt {
 }
 
 export function TransactionReceiptDetailView() {
+  const { fetchProducts } = useProductStore()
   const [transactions, setTransactions] = useState<TransactionReceipt[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedReceiptId, setSelectedReceiptId] = useState('')
   const [mobileActiveTab, setMobileActiveTab] = useState<'list' | 'preview'>('list')
+  const [isExporting, setIsExporting] = useState(false)
+  const [isVoiding, setIsVoiding] = useState(false)
 
-  useEffect(() => {
+  const loadData = () => {
     api.transaksi
       .getLaporan()
       .then((list) => {
@@ -56,6 +62,9 @@ export function TransactionReceiptDetailView() {
             year: 'numeric',
           })}, ${waktu} WIB`
 
+          const tunai = Number(item.uang_diterima) || Number(item.total_harga) || 0
+          const kembalian = Number(item.kembalian) || Math.max(0, tunai - Number(item.total_harga))
+
           return {
             backendId: item.id,
             no: idx + 1,
@@ -65,19 +74,23 @@ export function TransactionReceiptDetailView() {
             waktu,
             dateStr,
             items: [],
-            tunai: Number(item.total_harga) || 0,
-            kembalian: 0,
+            tunai,
+            kembalian,
             diskon: 0,
           }
         })
         setTransactions(mapped)
-        if (mapped[0]) {
+        if (mapped[0] && !selectedReceiptId) {
           setSelectedReceiptId(mapped[0].id)
         }
       })
       .catch((err) => {
         console.warn('Gagal memuat daftar laporan:', err)
       })
+  }
+
+  useEffect(() => {
+    loadData()
   }, [])
 
   // Muat detail item saat struk dipilih
@@ -133,24 +146,72 @@ export function TransactionReceiptDetailView() {
     window.print()
   }
 
+  const handleExportCsv = async () => {
+    try {
+      setIsExporting(true)
+      await api.transaksi.downloadCsv()
+    } catch (err: any) {
+      alert(err.message || 'Gagal mengekspor CSV')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  const handleVoidTransaction = async () => {
+    if (!currentReceipt) return
+    const ok = window.confirm(
+      `Apakah Anda yakin ingin membatalkan transaksi "${currentReceipt.id}"? Stok barang yang terjual akan otomatis dikembalikan ke inventaris!`
+    )
+    if (!ok) return
+
+    try {
+      setIsVoiding(true)
+      await api.transaksi.void(currentReceipt.backendId)
+      alert(`Transaksi ${currentReceipt.id} berhasil dibatalkan dan stok produk telah dipulihkan.`)
+      // Refresh produk dan daftar transaksi
+      await fetchProducts()
+      loadData()
+      setSelectedReceiptId('')
+    } catch (err: any) {
+      alert(err.message || 'Gagal membatalkan transaksi')
+    } finally {
+      setIsVoiding(false)
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 lg:gap-5 h-full min-h-0 select-none pb-1 overflow-hidden">
-      {/* Kolom Kiri: Input Pencarian di atas + Tabel Struk di bawah */}
+      {/* Kolom Kiri: Input Pencarian & Ekspor di atas + Tabel Struk di bawah */}
       <div
         className={`lg:col-span-7 flex flex-col gap-3 h-full min-h-0 overflow-hidden ${
           mobileActiveTab === 'list' ? 'flex' : 'hidden lg:flex'
         }`}
       >
-        {/* Input Pencarian */}
-        <div className="relative w-full shrink-0">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari No. Struk / ID Transaksi atau barang..."
-            className="w-full pl-9 pr-4 py-2.5 text-xs rounded-[15px] bg-white border border-purple-100/80 shadow-[0_2px_12px_rgba(103,62,232,0.04)] focus:outline-none focus:border-[#673ee8] text-slate-800 placeholder:text-slate-400 transition-all"
-          />
+        {/* Input Pencarian & Tombol Ekspor CSV */}
+        <div className="flex items-center gap-2 w-full shrink-0">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari No. Struk / ID Transaksi atau barang..."
+              className="w-full pl-9 pr-4 py-2.5 text-xs rounded-[15px] bg-white border border-purple-100/80 shadow-[0_2px_12px_rgba(103,62,232,0.04)] focus:outline-none focus:border-[#673ee8] text-slate-800 placeholder:text-slate-400 transition-all"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            disabled={isExporting}
+            title="Download Rekap CSV untuk Excel"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-[15px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-50"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">
+              {isExporting ? 'Mengekspor...' : 'Ekspor CSV'}
+            </span>
+          </button>
         </div>
 
         {/* Switcher Tab Khusus Tampilan Mobile & Tablet (< lg) */}
@@ -200,7 +261,7 @@ export function TransactionReceiptDetailView() {
             </table>
           </div>
 
-          {/* Area Scroll Daftar Struk: Scrollbar mulai persis dari baris pertama struk */}
+          {/* Area Scroll Daftar Struk */}
           <div className="overflow-y-auto flex-1 min-h-0 pr-1">
             <table className="w-full text-left text-xs border-collapse table-fixed">
               <tbody className="divide-y divide-slate-100/80">
@@ -282,35 +343,35 @@ export function TransactionReceiptDetailView() {
       </div>
 
       {/* Kolom Kanan: Preview Struk Termal Kasir (5/12 di Desktop, Tab di Mobile) */}
-        <div
-          className={`lg:col-span-5 h-full bg-white rounded-[15px] p-3 sm:p-4 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex-col justify-between min-h-0 overflow-hidden w-full ${
-            mobileActiveTab === 'preview' ? 'flex' : 'hidden lg:flex'
-          }`}
-        >
-          {/* Bar navigasi balik ke list khusus mobile */}
-          <div className="flex lg:hidden items-center justify-between pb-2 mb-1 border-b border-slate-100 shrink-0">
-            <button
-              type="button"
-              onClick={() => setMobileActiveTab('list')}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#673ee8] hover:text-[#5326cf] cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Daftar Struk ({filteredTransactions.length})</span>
-            </button>
-            <span className="text-[10px] font-semibold text-slate-400">
-              {currentReceipt?.id}
-            </span>
-          </div>
+      <div
+        className={`lg:col-span-5 h-full bg-white rounded-[15px] p-3 sm:p-4 shadow-[0_4px_24px_rgba(103,62,232,0.04)] border border-purple-100/40 flex-col justify-between min-h-0 overflow-hidden w-full ${
+          mobileActiveTab === 'preview' ? 'flex' : 'hidden lg:flex'
+        }`}
+      >
+        {/* Bar navigasi balik ke list khusus mobile */}
+        <div className="flex lg:hidden items-center justify-between pb-2 mb-1 border-b border-slate-100 shrink-0">
+          <button
+            type="button"
+            onClick={() => setMobileActiveTab('list')}
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#673ee8] hover:text-[#5326cf] cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Daftar Struk ({filteredTransactions.length})</span>
+          </button>
+          <span className="text-[10px] font-semibold text-slate-400">
+            {currentReceipt?.id}
+          </span>
+        </div>
 
-          {/* Area Kertas Struk: Full Height, dengan flexible space antara item barang dan total */}
-          <div className="flex-1 min-h-0 flex flex-col items-center justify-between w-full">
-            {!currentReceipt ? (
-              <div className="w-full max-w-full sm:max-w-[420px] mx-auto h-full flex-1 bg-[#fcfbfe] border border-slate-200/80 rounded-[15px] p-8 flex flex-col items-center justify-center text-center text-slate-400">
-                <ReceiptText className="w-10 h-10 stroke-1 text-slate-300 mb-2" />
-                <p className="text-xs font-semibold text-slate-600">Belum ada struk untuk ditampilkan</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">Daftar transaksi saat ini masih kosong</p>
-              </div>
-            ) : (
+        {/* Area Kertas Struk */}
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-between w-full">
+          {!currentReceipt ? (
+            <div className="w-full max-w-full sm:max-w-[420px] mx-auto h-full flex-1 bg-[#fcfbfe] border border-slate-200/80 rounded-[15px] p-8 flex flex-col items-center justify-center text-center text-slate-400">
+              <ReceiptText className="w-10 h-10 stroke-1 text-slate-300 mb-2" />
+              <p className="text-xs font-semibold text-slate-600">Belum ada struk untuk ditampilkan</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Daftar transaksi saat ini masih kosong</p>
+            </div>
+          ) : (
             <div
               id="thermal-receipt-print"
               className="w-full max-w-full sm:max-w-[420px] mx-auto h-full flex-1 bg-[#fcfbfe] border border-slate-200/80 rounded-[15px] p-3 sm:p-4 md:p-4.5 font-mono text-slate-800 shadow-2xs flex flex-col justify-between overflow-hidden transition-all"
@@ -343,7 +404,7 @@ export function TransactionReceiptDetailView() {
                 </div>
 
                 {/* Daftar Produk Belanja */}
-                <div className="py-1.5 border-t border-dashed border-slate-300 space-y-1.5 overflow-y-auto max-h-[30vh] sm:max-h-[35vh]">
+                <div className="py-1.5 border-t border-dashed border-slate-300 space-y-1.5 overflow-y-auto max-h-[26vh] sm:max-h-[30vh]">
                   {currentReceipt.items.map((item, idx) => (
                     <div key={idx} className="flex flex-col text-[10.5px] sm:text-[11.5px]">
                       <div className="flex justify-between font-medium">
@@ -360,10 +421,10 @@ export function TransactionReceiptDetailView() {
                 </div>
               </div>
 
-              {/* RUANG KOSONG (FLEX SPACE) ANTARA ITEM BARANG KE TOTAL */}
-              <div className="flex-1 min-h-[16px]" />
+              {/* RUANG KOSONG (FLEX SPACE) */}
+              <div className="flex-1 min-h-[12px]" />
 
-              {/* BAGIAN BAWAH: Ringkasan Pembayaran & Catatan Kaki (Pinned di Bawah Struk) */}
+              {/* BAGIAN BAWAH: Ringkasan Pembayaran & Catatan Kaki */}
               <div className="shrink-0">
                 {/* Ringkasan Pembayaran */}
                 <div className="py-1.5 border-t border-dashed border-slate-300 text-[10px] sm:text-[11px] space-y-0.5">
@@ -402,31 +463,45 @@ export function TransactionReceiptDetailView() {
                 </div>
               </div>
             </div>
-            )}
-          </div>
-
-          {/* Tombol Aksi Bawah: Pinned di dasar card, kelengkungan 15px */}
-          <div className="w-full max-w-full sm:max-w-[420px] mx-auto grid grid-cols-2 gap-2 sm:gap-2.5 pt-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-3 rounded-[15px] bg-[#673ee8] hover:bg-[#582bc4] text-white text-xs font-semibold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>Cetak Struk</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 px-3 rounded-[15px] bg-[#f0e9fd] hover:bg-[#e6ddfb] text-[#673ee8] text-xs font-semibold transition-all cursor-pointer border border-purple-200/60"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Unduh PDF</span>
-            </button>
-          </div>
+          )}
         </div>
+
+        {/* Tombol Aksi Bawah: Cetak Struk, Unduh PDF, & Batalkan Transaksi */}
+        {currentReceipt && (
+          <div className="w-full max-w-full sm:max-w-[420px] mx-auto flex flex-col gap-2 pt-2.5 shrink-0">
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 rounded-[15px] bg-[#673ee8] hover:bg-[#582bc4] text-white text-xs font-semibold shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Cetak Struk</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-3 rounded-[15px] bg-[#f0e9fd] hover:bg-[#e6ddfb] text-[#673ee8] text-xs font-semibold transition-all cursor-pointer border border-purple-200/60"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Unduh PDF</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleVoidTransaction}
+              disabled={isVoiding}
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-[12px] bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold border border-rose-200/80 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Ban className="w-3.5 h-3.5" />
+              <span>{isVoiding ? 'Membatalkan Transaksi...' : 'Batalkan Transaksi (Void & Kembalikan Stok)'}</span>
+            </button>
+          </div>
+        )}
       </div>
+    </div>
   )
 }
 

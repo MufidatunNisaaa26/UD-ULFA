@@ -173,6 +173,7 @@ export function useTransactionPos() {
         })),
         metode_pembayaran: 'Tunai',
         no_transaksi: transactionNumber,
+        uang_diterima: cashReceived,
       })
       // Refresh produk agar stok terupdate realtime dari server
       await fetchProducts()

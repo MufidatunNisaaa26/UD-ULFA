@@ -11,7 +11,7 @@ function getInitialDateString() {
 }
 
 export function useFinance() {
-  const { transactions, addExpense, fetchTransactions } = useFinanceStore()
+  const { transactions, addExpense, deleteExpense, fetchTransactions } = useFinanceStore()
 
   useEffect(() => {
     fetchTransactions()
@@ -94,7 +94,7 @@ export function useFinance() {
   }
 
   // Handle Submit Form dengan Validasi Zod Schema
-  const handleSubmitExpense = (e: React.FormEvent) => {
+  const handleSubmitExpense = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const rawNominal = nominalInput.replace(/\D/g, '')
@@ -118,7 +118,7 @@ export function useFinance() {
 
     setFormErrors({})
 
-    addExpense({
+    await addExpense({
       namaKegiatan: validation.data.namaKegiatan,
       tanggal: validation.data.tanggal,
       nominal: validation.data.nominal,
@@ -129,6 +129,16 @@ export function useFinance() {
     setNamaKegiatan('')
     setNominalInput('')
     setToastMessage('Pengeluaran berhasil dicatat!')
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 3500)
+  }
+
+  const handleDeleteExpense = async (id: string, backendId?: number) => {
+    const ok = window.confirm('Hapus catatan pengeluaran ini?')
+    if (!ok) return
+    await deleteExpense(id, backendId)
+    setToastMessage('Pengeluaran berhasil dihapus')
     setTimeout(() => {
       setToastMessage(null)
     }, 3500)
@@ -148,8 +158,8 @@ export function useFinance() {
     formErrors,
     toastMessage,
     handleSubmitExpense,
+    handleDeleteExpense,
     totalPemasukan,
     totalPengeluaran,
   }
 }
-

@@ -55,6 +55,7 @@ export function useProductList({
   // Form State
   const [formNama, setFormNama] = useState('')
   const [formKategori, setFormKategori] = useState<string>('')
+  const [formHargaBeli, setFormHargaBeli] = useState<number | ''>('')
   const [formHarga, setFormHarga] = useState<number | ''>('')
   const [formStok, setFormStok] = useState('')
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
@@ -74,6 +75,7 @@ export function useProductList({
     setEditingProduct(null)
     setFormNama('')
     setFormKategori('')
+    setFormHargaBeli('')
     setFormHarga('')
     setFormStok('')
     setFormErrors({})
@@ -102,6 +104,7 @@ export function useProductList({
     setEditingProduct(item)
     setFormNama(item.namaProduk)
     setFormKategori(item.kategori)
+    setFormHargaBeli(item.hargaBeli !== undefined ? item.hargaBeli : '')
     setFormHarga(item.harga)
     setFormStok(item.stokText || `${item.stokJumlah} ${item.stokSatuan}`)
     setSelectedImagePreview(item.customImageUrl || null)
@@ -133,6 +136,7 @@ export function useProductList({
     const validationResult = productSchema.safeParse({
       namaProduk: formNama,
       kategori: formKategori as ProductCategory,
+      hargaBeli: formHargaBeli === '' ? 0 : formHargaBeli,
       harga: formHarga === '' ? 0 : formHarga,
       stok: formStok,
     })
@@ -160,6 +164,7 @@ export function useProductList({
         {
           namaProduk: validatedData.namaProduk,
           kategori: validatedData.kategori,
+          hargaBeli: validatedData.hargaBeli || 0,
           harga: validatedData.harga,
           stokJumlah: parsedNum,
           stokSatuan: parsedUnit,
@@ -174,6 +179,7 @@ export function useProductList({
         {
           namaProduk: validatedData.namaProduk,
           kategori: validatedData.kategori,
+          hargaBeli: validatedData.hargaBeli || 0,
           harga: validatedData.harga,
           stokJumlah: parsedNum,
           stokSatuan: parsedUnit,
@@ -204,7 +210,7 @@ export function useProductList({
     setProductToDelete(null)
   }
 
-  // Image Upload Handlers
+  // Upload Foto Handlers
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
@@ -258,6 +264,8 @@ export function useProductList({
     setFormNama,
     formKategori,
     setFormKategori,
+    formHargaBeli,
+    setFormHargaBeli,
     formHarga,
     setFormHarga,
     formStok,
@@ -282,4 +290,3 @@ export function useProductList({
     removePhoto,
   }
 }
-

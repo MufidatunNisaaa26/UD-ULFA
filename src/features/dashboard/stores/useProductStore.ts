@@ -9,6 +9,7 @@ export interface ProductItem {
   namaProduk: string
   kategori: ProductCategory
   harga: number
+  hargaBeli?: number
   stokJumlah: number
   stokSatuan: string
   stokText?: string
@@ -43,6 +44,7 @@ function mapApiToProductItem(item: ApiProduct, idx: number): ProductItem {
     namaProduk: item.nama,
     kategori,
     harga: Number(item.harga) || 0,
+    hargaBeli: Number(item.harga_beli) || 0,
     stokJumlah: Number(item.stok) || 0,
     stokSatuan: 'Pcs',
     stokText: `${item.stok} Pcs`,
@@ -97,6 +99,9 @@ export const useProductStore = create<ProductState>((set, get) => ({
         formData.append('nama', newProduct.namaProduk)
         formData.append('kategori', newProduct.kategori)
         formData.append('harga', String(newProduct.harga))
+        if (newProduct.hargaBeli !== undefined) {
+          formData.append('harga_beli', String(newProduct.hargaBeli))
+        }
         formData.append('stok', String(newProduct.stokJumlah))
         formData.append('deskripsi', '-')
         formData.append('gambar', imageFile)
@@ -106,6 +111,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
           nama: newProduct.namaProduk,
           kategori: newProduct.kategori,
           harga: newProduct.harga,
+          harga_beli: newProduct.hargaBeli || 0,
           stok: newProduct.stokJumlah,
           deskripsi: '-',
         })
@@ -141,6 +147,8 @@ export const useProductStore = create<ProductState>((set, get) => ({
         if (updated.kategori) formData.append('kategori', updated.kategori)
         if (updated.harga !== undefined)
           formData.append('harga', String(updated.harga))
+        if (updated.hargaBeli !== undefined)
+          formData.append('harga_beli', String(updated.hargaBeli))
         if (updated.stokJumlah !== undefined)
           formData.append('stok', String(updated.stokJumlah))
         formData.append('gambar', imageFile)
@@ -150,6 +158,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
           nama: updated.namaProduk,
           kategori: updated.kategori,
           harga: updated.harga,
+          harga_beli: updated.hargaBeli,
           stok: updated.stokJumlah,
         })
       }

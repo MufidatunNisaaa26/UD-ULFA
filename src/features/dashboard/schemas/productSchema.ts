@@ -16,9 +16,15 @@ export const productSchema = z.object({
   kategori: z.enum(productCategories, {
     message: 'Kategori produk wajib dipilih',
   }),
+  hargaBeli: z
+    .number({
+      message: 'Harga modal/beli harus berupa angka valid',
+    })
+    .min(0, 'Harga modal tidak boleh negatif')
+    .optional(),
   harga: z
     .number({
-      message: 'Harga produk harus berupa angka valid',
+      message: 'Harga jual produk harus berupa angka valid',
     })
     .min(1, 'Harga produk harus lebih dari 0'),
   stok: z
@@ -28,4 +34,3 @@ export const productSchema = z.object({
 })
 
 export type ProductFormValues = z.infer<typeof productSchema>
-

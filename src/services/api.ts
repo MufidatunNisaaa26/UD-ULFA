@@ -57,6 +57,7 @@ export interface ApiProduct {
   id: number
   nama: string
   kategori: string
+  harga_beli?: number
   harga: number
   stok: number
   deskripsi?: string
@@ -95,8 +96,17 @@ export interface ApiTransactionReceipt {
   no_transaksi: string
   total_harga: number
   metode_pembayaran: string
+  uang_diterima?: number | null
+  kembalian?: number | null
   tanggal: string
   items?: ApiTransactionItem[]
+}
+
+export interface ApiExpense {
+  id: number
+  keterangan: string
+  jumlah: number
+  tanggal: string
 }
 
 export interface ApiUser {
@@ -186,15 +196,22 @@ export const api = {
       items: { produk_id: number; jumlah: number }[]
       metode_pembayaran?: string
       no_transaksi?: string
+      uang_diterima?: number
     }) =>
       request<{
         message: string
         id: number
         no_transaksi: string
         total_harga: number
+        uang_diterima?: number
+        kembalian?: number
       }>('/transaksi', {
         method: 'POST',
         body: JSON.stringify(body),
+      }),
+    void: (id: number | string) =>
+      request<{ message: string }>(`/transaksi/${id}`, {
+        method: 'DELETE',
       }),
     getLaporan: (params?: { dari?: string; sampai?: string }) => {
       const q = new URLSearchParams()
@@ -205,6 +222,47 @@ export const api = {
     },
     getDetailLaporan: (id: number | string) =>
       request<ApiTransactionReceipt>(`/laporan/${id}`),
+    downloadCsv: async (params?: { dari?: string; sampai?: string }) => {
+      const q = new URLSearchParams()
+      if (params?.dari) q.append('dari', params.dari)
+      if (params?.sampai) q.append('sampai', params.sampai)
+      const queryStr = q.toString() ? `?${q.toString()}` : ''
+      const res = await fetch(`${BASE_URL}/laporan/export${queryStr}`, {
+        headers: {
+          'ngrok-skip-browser-warning': '69420',
+        },
+      })
+      if (!res.ok) throw new Error('Gagal mengunduh laporan CSV')
+      const blob = await res.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `laporan-transaksi-${new Date().toISOString().slice(0, 10)}.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    },
+  },
+
+  // Pengeluaran / Beban Operasional
+  pengeluaran: {
+    getAll: (params?: { dari?: string; sampai?: string }) => {
+      const q = new URLSearchParams()
+      if (params?.dari) q.append('dari', params.dari)
+      if (params?.sampai) q.append('sampai', params.sampai)
+      const queryStr = q.toString() ? `?${q.toString()}` : ''
+      return request<ApiExpense[]>(`/pengeluaran${queryStr}`)
+    },
+    create: (body: { keterangan: string; jumlah: number; tanggal?: string }) =>
+      request<{ message: string; id: number }>('/pengeluaran', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    delete: (id: number | string) =>
+      request<{ message: string }>(`/pengeluaran/${id}`, {
+        method: 'DELETE',
+      }),
   },
 
   // Dashboard & Statistik

@@ -48,7 +48,7 @@ export function ProductDetailView() {
       namaProduk: prod.namaProduk,
       kategori: prod.kategori as 'ATK' | 'Perlengkapan Sekolah' | 'Perlengkapan Jenazah',
       jumlahMasuk: `${prod.stokJumlah} ${prod.stokSatuan}`,
-      hargaBeli: `Rp ${Math.round(prod.harga * 0.8).toLocaleString('id-ID')}`,
+      hargaBeli: `Rp ${(prod.hargaBeli && prod.hargaBeli > 0 ? prod.hargaBeli : Math.round(prod.harga * 0.8)).toLocaleString('id-ID')}`,
       hargaJual: `Rp ${prod.harga.toLocaleString('id-ID')}`,
       customImageUrl: prod.customImageUrl,
     }))

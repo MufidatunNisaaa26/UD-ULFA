@@ -1,4 +1,4 @@
-import { Search, TrendingUp, TrendingDown, CheckCircle2, Clock } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, CheckCircle2, Clock, Trash2 } from 'lucide-react'
 import { useFinance } from '../hooks/useFinance'
 
 export function FinanceView() {
@@ -16,6 +16,7 @@ export function FinanceView() {
     formErrors,
     toastMessage,
     handleSubmitExpense,
+    handleDeleteExpense,
     totalPemasukan,
     totalPengeluaran,
   } = useFinance()
@@ -37,7 +38,7 @@ export function FinanceView() {
         {/* Header Bar: Judul & Search Input */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 shrink-0">
           <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-            Riwayat Transaksi
+            Riwayat Transaksi Keuangan
           </h3>
 
           <div className="relative w-full sm:w-64 md:w-72">
@@ -57,11 +58,12 @@ export function FinanceView() {
           <table className="w-full text-left text-xs border-collapse table-fixed">
             <thead>
               <tr className="bg-[#f0e9fd] text-[#673ee8] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
-                <th className="py-3 px-2 text-center w-12 rounded-l-[15px]">NO.</th>
+                <th className="py-3 px-2 text-center w-10 rounded-l-[15px]">NO.</th>
                 <th className="py-3 px-3 w-[22%] text-left">TANGGAL WAKTU</th>
-                <th className="py-3 px-3 w-[32%] text-left">KETERANGAN</th>
-                <th className="py-3 px-2 w-[20%] text-center">KATEGORI</th>
-                <th className="py-3 px-4 text-right rounded-r-[15px]">NOMINAL</th>
+                <th className="py-3 px-3 w-[30%] text-left">KETERANGAN</th>
+                <th className="py-3 px-2 w-[18%] text-center">KATEGORI</th>
+                <th className="py-3 px-3 text-right">NOMINAL</th>
+                <th className="py-3 px-2 text-center w-10 rounded-r-[15px]"></th>
               </tr>
             </thead>
           </table>
@@ -73,7 +75,7 @@ export function FinanceView() {
             <tbody className="divide-y divide-slate-100/80">
               {filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-slate-400 text-xs">
+                  <td colSpan={6} className="py-12 text-center text-slate-400 text-xs">
                     Tidak ada riwayat transaksi keuangan ditemukan.
                   </td>
                 </tr>
@@ -84,10 +86,10 @@ export function FinanceView() {
                   return (
                     <tr
                       key={trx.id || trx.no}
-                      className="hover:bg-[#faf8fe] transition-colors"
+                      className="hover:bg-[#faf8fe] transition-colors group"
                     >
                       {/* NO */}
-                      <td className="py-3 px-2 text-center text-slate-500 font-medium w-12">
+                      <td className="py-3 px-2 text-center text-slate-500 font-medium w-10">
                         {trx.no}
                       </td>
 
@@ -97,12 +99,12 @@ export function FinanceView() {
                       </td>
 
                       {/* KETERANGAN */}
-                      <td className="py-3 px-3 w-[32%] text-left font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
+                      <td className="py-3 px-3 w-[30%] text-left font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
                         {trx.keterangan}
                       </td>
 
                       {/* KATEGORI */}
-                      <td className="py-3 px-2 w-[20%] text-center whitespace-nowrap">
+                      <td className="py-3 px-2 w-[18%] text-center whitespace-nowrap">
                         <span
                           className={`inline-block px-3 py-1 rounded-[15px] text-[11px] font-semibold ${
                             isPemasukan
@@ -115,7 +117,7 @@ export function FinanceView() {
                       </td>
 
                       {/* NOMINAL */}
-                      <td className="py-3 px-4 text-right font-black text-xs sm:text-[14px] whitespace-nowrap">
+                      <td className="py-3 px-3 text-right font-black text-xs sm:text-[14px] whitespace-nowrap">
                         <span
                           className={
                             isPemasukan ? 'text-[#059669]' : 'text-[#b91c1c]'
@@ -124,6 +126,20 @@ export function FinanceView() {
                           {isPemasukan ? '+ ' : '- '}Rp{' '}
                           {trx.nominal.toLocaleString('id-ID')}
                         </span>
+                      </td>
+
+                      {/* AKSI HAPUS (Hanya untuk pengeluaran) */}
+                      <td className="py-3 px-2 text-center w-10">
+                        {!isPemasukan && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteExpense(trx.id, trx.backendId)}
+                            title="Hapus Pengeluaran"
+                            className="p-1 rounded-[8px] text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all opacity-80 group-hover:opacity-100 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   )
@@ -166,7 +182,7 @@ export function FinanceView() {
               )}
             </div>
 
-            {/* Field: Tanggal (Satu per satu ke bawah) */}
+            {/* Field: Tanggal */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                 Tanggal
@@ -189,7 +205,7 @@ export function FinanceView() {
               )}
             </div>
 
-            {/* Field: Waktu (Realtime Read Only - Satu per satu ke bawah) */}
+            {/* Field: Waktu (Realtime Read Only) */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold text-slate-700">
@@ -253,7 +269,7 @@ export function FinanceView() {
         {/* Ringkasan Hari Ini: Proporsional & Rapi */}
         <div className="pt-3 border-t border-slate-100 mt-2.5">
           <p className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 px-0.5">
-            Ringkasan Hari Ini
+            Ringkasan Keuangan
           </p>
 
           <div className="space-y-2">
@@ -264,7 +280,7 @@ export function FinanceView() {
                   <TrendingUp className="w-4 h-4 stroke-[2.2]" />
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-800 truncate">
-                  Pemasukan
+                  Total Pemasukan
                 </span>
               </div>
               <span className="text-xs sm:text-sm font-black text-[#059669] tracking-tight whitespace-nowrap pl-2">
@@ -279,7 +295,7 @@ export function FinanceView() {
                   <TrendingDown className="w-4 h-4 stroke-[2.2]" />
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-800 truncate">
-                  Pengeluaran
+                  Total Pengeluaran
                 </span>
               </div>
               <span className="text-xs sm:text-sm font-black text-[#b91c1c] tracking-tight whitespace-nowrap pl-2">
@@ -294,4 +310,3 @@ export function FinanceView() {
 }
 
 export default FinanceView
-

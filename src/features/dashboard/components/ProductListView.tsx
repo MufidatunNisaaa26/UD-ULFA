@@ -270,6 +270,8 @@ export function ProductListView(props: ProductListViewProps = {}) {
     setFormNama,
     formKategori,
     setFormKategori,
+    formHargaBeli,
+    setFormHargaBeli,
     formHarga,
     setFormHarga,
     formStok,
@@ -359,12 +361,44 @@ export function ProductListView(props: ProductListViewProps = {}) {
               </div>
             </div>
 
-            {/* Baris 2: Harga & Stok */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-6">
-              {/* Harga */}
+            {/* Baris 2: Harga Modal, Harga Jual, & Stok */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5">
+              {/* Harga Modal (Beli) */}
               <div>
                 <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
-                  Harga
+                  Harga Modal (Beli)
+                </label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm sm:text-base text-slate-400 font-medium pointer-events-none">
+                    Rp
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={formHargaBeli === '' ? '' : formHargaBeli.toLocaleString('id-ID')}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '')
+                      setFormHargaBeli(raw === '' ? '' : Number(raw))
+                    }}
+                    className={`w-full text-sm sm:text-base pl-12 pr-4 py-3 sm:py-3.5 rounded-[15px] bg-[#f8f7fd] border focus:bg-white text-slate-800 placeholder:text-slate-400 outline-none transition-all ${
+                      formErrors.hargaBeli
+                        ? 'border-rose-400 focus:border-rose-500'
+                        : 'border-purple-100/60 focus:border-[#673ee8]'
+                    }`}
+                  />
+                </div>
+                {formErrors.hargaBeli && (
+                  <p className="text-rose-600 text-xs mt-1.5 font-medium">
+                    {formErrors.hargaBeli}
+                  </p>
+                )}
+              </div>
+
+              {/* Harga Jual */}
+              <div>
+                <label className="block text-sm sm:text-base font-semibold text-slate-800 mb-2">
+                  Harga Jual
                 </label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm sm:text-base text-slate-400 font-medium pointer-events-none">
